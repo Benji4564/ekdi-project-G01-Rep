@@ -31,6 +31,9 @@ public class SmartHeating {
         s.addMeasurement(1237);
         s.addMeasurement(1240);
         s.addMeasurement(1241);
+        //hello
+
+        
 
         // this makes the plot available on http://localhost:8090/view/heating
         GraphGenerator.showLinePlot(s.getMeasurements());
