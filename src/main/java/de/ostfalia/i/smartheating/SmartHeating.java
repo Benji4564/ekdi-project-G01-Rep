@@ -32,7 +32,7 @@ public class SmartHeating {
         s.addMeasurement(1237);
         s.addMeasurement(1240); //hi 
         s.addMeasurement(1241);
-        //hello world
+        //hello
 
         
 
