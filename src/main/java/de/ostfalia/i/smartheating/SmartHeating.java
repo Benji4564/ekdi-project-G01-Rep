@@ -27,7 +27,7 @@ public class SmartHeating {
         s.addMeasurement(1234);
         s.addMeasurement(1235);
         s.addMeasurement(1237);
-        s.addMeasurement(1240);
+        s.addMeasurement(1240); //hi 
         s.addMeasurement(1241);
 
         // this makes the plot available on http://localhost:8090/view/heating
