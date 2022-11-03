@@ -3,6 +3,8 @@ import de.ostfalia.i.smartheating.graphs.GraphGenerator;
 
 import java.util.Vector;
 
+//test
+
 public class SmartHeating {
     private final Vector<Double> measurements = new Vector<>();
 
@@ -29,6 +31,9 @@ public class SmartHeating {
         s.addMeasurement(1237);
         s.addMeasurement(1240); //hi 
         s.addMeasurement(1241);
+        //hello world
+
+        
 
         // this makes the plot available on http://localhost:8090/view/heating
         GraphGenerator.showLinePlot(s.getMeasurements());
