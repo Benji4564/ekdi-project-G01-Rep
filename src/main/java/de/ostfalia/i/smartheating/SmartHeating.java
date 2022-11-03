@@ -3,6 +3,8 @@ import de.ostfalia.i.smartheating.graphs.GraphGenerator;
 
 import java.util.Vector;
 
+//test
+
 public class SmartHeating {
     private final Vector<Double> measurements = new Vector<>();
 
