@@ -1,0 +1,107 @@
+{
+  "data": [
+    {
+      "name": "Badezimmer",
+      "measurements": {
+        "years": [
+          {
+            "months": [
+              {
+                "month": 1,
+                "days": [
+                  {
+                    "hourlyTemperature": [
+                      21,
+                      23,
+                      20,
+                      21,
+                      23,
+                      20,
+                      24,
+                      25,
+                      23,
+                      23,
+                      24,
+                      25,
+                      25,
+                      20,
+                      22,
+                      20,
+                      20,
+                      22,
+                      23,
+                      25,
+                      24,
+                      23,
+                      25,
+                      1
+                    ],
+                    "hourlyUsage": [
+                      21,
+                      23,
+                      20,
+                      21,
+                      23,
+                      20,
+                      24,
+                      25,
+                      23,
+                      23,
+                      24,
+                      25,
+                      25,
+                      20,
+                      22,
+                      20,
+                      20,
+                      22,
+                      23,
+                      25,
+                      24,
+                      23,
+                      25,
+                      1
+                    ],
+                    "day": 1
+                  },
+                  {
+                    "hourlyTemperature": [],
+                    "hourlyUsage": [
+                      0
+                    ],
+                    "day": 2
+                  },
+                  {
+                    "hourlyTemperature": [],
+                    "hourlyUsage": [],
+                    "day": 5
+                  }
+                ]
+              },
+              {
+                "month": 2,
+                "days": []
+              }
+            ],
+            "year": 2018
+          },
+          {
+            "months": [
+              {
+                "month": 1,
+                "days": []
+              }
+            ],
+            "year": 2019
+          }
+        ]
+      }
+    },
+    {
+      "name": "Wohnzimmer",
+      "measurements": {
+        "years": []
+      }
+    }
+  ]
+}
