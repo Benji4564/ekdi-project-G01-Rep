@@ -111,8 +111,7 @@ public class SmartHeating {
         
         s2.addMeasurement(1232);
         s2.addMeasurement(1237);
-
-        utils.addRoom("Schlafzimmer");
+        s2.setTraceColour(TraceColour.GREEN);
 
         drawLinePlot( graphConfig, s2, s);
 
