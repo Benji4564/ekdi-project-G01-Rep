@@ -8,6 +8,8 @@ import com.google.gson.GsonBuilder;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class utils {
 
@@ -19,7 +21,7 @@ public class utils {
      * @param roomName the room to find the data for
      * @return the hourly measurement data for the given parameters
      */
-    public static int[] getDailyData(long yearValue, long monthValue, long dayValue, String roomName){
+    public static int[] getDayData(long yearValue, long monthValue, long dayValue, String roomName){
         Object response = null;
         int[] data = null;
         JSONArray rooms = (JSONArray) SmartHeating.jsonObject.get("data");
@@ -255,7 +257,7 @@ public class utils {
      * @param value the hourly usage to set
      * @return weather the operation was successful and the data was added
      */
-    public static boolean createDay(long yearValue, long monthValue, long dayValue, String roomName){
+    public static boolean addDay(long yearValue, long monthValue, long dayValue, String roomName){
         JSONObject jsonObject = SmartHeating.jsonObject;
         JSONArray rooms = (JSONArray) jsonObject.get("data");
         for (Object room : rooms) {
@@ -281,6 +283,7 @@ public class utils {
                                 newDay.put("day", dayValue);
                                 JSONArray hourlyUsage = new JSONArray();
                                 JSONArray hourlyTemperature = new JSONArray();
+                                Map<String, Object> hourlyUsageMap = new HashMap<>();
                                 newDay.put("hourlyUsage", hourlyUsage);
                                 newDay.put("hourlyTemperature", hourlyTemperature);
                                 days.add(newDay);
@@ -304,7 +307,7 @@ public class utils {
      * @param roomName the room to find the data to
      * @return weather the operation was successful and the data was added
      */
-    public static boolean createMonth(long yearValue, long monthValue, String roomName){
+    public static boolean AddMonth(long yearValue, long monthValue, String roomName){
         JSONObject jsonObject = SmartHeating.jsonObject;
         JSONArray rooms = (JSONArray) jsonObject.get("data");
         for (Object room : rooms) {
@@ -345,7 +348,7 @@ public class utils {
      * @return weather the operation was successful and the data was added
      */
 
-    public static boolean createYear(long yearValue, String roomName){
+    public static boolean addYear(long yearValue, String roomName){
         JSONObject jsonObject = SmartHeating.jsonObject;
         JSONArray rooms = (JSONArray) jsonObject.get("data");
         for (Object room : rooms) {
@@ -362,7 +365,7 @@ public class utils {
                 JSONObject newYear = new JSONObject();
                 newYear.put("year", yearValue);
                 JSONArray months = new JSONArray();
-                newYear.put("months", months);
+                newYear.put((String)"months", (Object) months);
                 years.add(newYear);
                 SmartHeating.jsonObject = jsonObject;
                 writeToFile(jsonObject);
@@ -378,7 +381,7 @@ public class utils {
      * @return weather the operation was successful and the data was added
      */
 
-    public static boolean createRoom(String roomName){
+    public static boolean addRoom(String roomName){
         JSONObject jsonObject = SmartHeating.jsonObject;
         JSONArray rooms = (JSONArray) jsonObject.get("data");
         for (Object room : rooms) {

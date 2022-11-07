@@ -10,10 +10,29 @@ import org.charts.dataviewer.utils.TraceColour;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+class GraphConfig {
+    public String x = "Hour";
+    public String y = "Value";
+    public String headline = "Smart Heating";
+    public Object[] xArray = null;
+}
+
 public class SmartHeating {
     private String RoomName;
     private final Vector<Double> measurements = new Vector<>();
     private TraceColour traceColour = TraceColour.BLUE;
+
+    private static void init(){
+        Object obj = null;
+        try (FileReader fileReader = new FileReader("src/main/data.json")){
+            obj = new JSONParser().parse(fileReader);
+            jsonObject= (JSONObject) obj;
+
+        } catch (Exception e) {
+            System.out.println(e);
+            System.err.println("Error while reading file");
+        }
+    }
 
     public void setTraceColour(TraceColour traceColour) {
         this.traceColour = traceColour;
@@ -44,6 +63,10 @@ public class SmartHeating {
         return measurements;
     }
 
+    /**
+     * @return The measurements as a double array
+     */
+
     public double getAverage() {
         double measurementsSum = 0;
         for (double m : measurements) {
@@ -52,53 +75,51 @@ public class SmartHeating {
         return measurementsSum / measurements.size();
     }
 
+    /**
+     * @param config The configuration for the graph to be generated based on the config object
+     * @param rooms An array of rooms to be displayed in the graph based on the SmartHeating class
+     * @return The path to the generated graph
+     */
 
-    public static void drawLinePlot( TraceColour color,  SmartHeating... rooms ) {
- 
-        GraphGenerator.showLinePlot( rooms, x, y, headline);
+    public static void drawLinePlot(GraphConfig config,  SmartHeating... rooms ) {
+        Object[] roomsArray = new Object[rooms.length];
+
+        GraphGenerator.showLinePlot( rooms, config.x, config.y, config.headline, config.xArray);
+
     }
 
     public static JSONObject jsonObject = null;
-    public static String x = "Hour";
-    public static String y = "Value";
-    public static String headline = "Smart Heating";
     public static void main(String[] args) throws FileNotFoundException{
-
-        Object obj = null;
-
-        try (FileReader fileReader = new FileReader("src/main/data.json")){
-            obj = new JSONParser().parse(fileReader);
-            jsonObject= (JSONObject) obj;
-
-        } catch (Exception e) {
-            System.out.println(e);
-            System.err.println("Error while reading file");
-        }
-
-
+        init();
+        
+        GraphConfig graphConfig = new GraphConfig();
+        graphConfig.x = "Hour";
+        graphConfig.y = "Value";
+        graphConfig.headline = "Smart Heating";
 
         SmartHeating s = new SmartHeating();
         SmartHeating s2 = new SmartHeating();
+
         s.setTraceColour(TraceColour.RED);
         s.setRoomName("Badezimmer");
-        
         
         s.addMeasurement(1234);
         s.addMeasurement(1235);
         s.addMeasurement(1237);
-        s.addMeasurement(1240); //hi 
+        s.addMeasurement(1240);
         s.addMeasurement(1241);
-        //hello
         
         s2.addMeasurement(1232);
         s2.addMeasurement(1237);
 
-    
-        drawLinePlot( TraceColour.BLUE, s2, s);
+        utils.addRoom("Schlafzimmer");
+
+        drawLinePlot( graphConfig, s2, s);
 
         Scanner keyboard = new Scanner(System.in);
         keyboard.nextLine();
-        drawLinePlot(TraceColour.BLACK, s);
+        drawLinePlot(graphConfig, s);
+        keyboard.close();
         
         // this makes the plot available on http://localhost:8090/view/heating
     }

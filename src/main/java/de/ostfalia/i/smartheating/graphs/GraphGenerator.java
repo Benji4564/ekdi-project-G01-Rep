@@ -13,21 +13,25 @@ import java.util.Vector;
 import java.util.stream.IntStream;
 
 public final class GraphGenerator {
-    private static LineTrace<Object> createLineTrace(Vector<Double> measurements, String name, TraceColour traceColour) {
+    private static LineTrace<Object> createLineTrace(Vector<Double> measurements, String name, TraceColour traceColour, Object[] xArray) {
         LineTrace<Object> lineTrace = new LineTrace<>();
-        lineTrace.setxArray(IntStream.rangeClosed(1, measurements.size()).boxed().toArray());
+        if (xArray != null) {
+            lineTrace.setxArray(xArray);
+        } else {
+            lineTrace.setxArray(IntStream.range(0, measurements.size()).boxed().toArray());
+        }
         lineTrace.setyArray(measurements.toArray());
         lineTrace.setTraceName(name);
         lineTrace.setTraceColour(traceColour);
         return lineTrace;
     }
 
-    private static BarTrace<Object> createBarTrace(Vector<Double> measurements) {
+    private static BarTrace<Object> createBarTrace(Vector<Double> measurements, String name, TraceColour traceColour) {
         BarTrace<Object> barTrace = new BarTrace<>();
         barTrace.setxArray(IntStream.rangeClosed(1, measurements.size()).boxed().toArray());
         barTrace.setyArray(measurements.toArray());
-        barTrace.setTraceName("Measurements");
-        barTrace.setTraceColour(TraceColour.BLUE);
+        barTrace.setTraceName(name);
+        barTrace.setTraceColour(traceColour);
         return barTrace;
     }
 
@@ -36,7 +40,40 @@ public final class GraphGenerator {
      */
     public static DataViewer dataviewer = new DataViewer("heating");
 
-     public static void showLinePlot(SmartHeating[] rooms, String x, String y, String headline) {
+    /**
+     * 
+     * @param rooms An SmartHeating object array with all rooms
+     * @param x    The x-axis label
+     * @param y    The y-axis label
+     * @param headline The headline of the graph
+     * @return The generated graph
+     */
+
+     public static void showLinePlot(SmartHeating[] rooms, String x, String y, String headline, Object[] xArray) {
+        dataviewer.resetPlot();
+        DataViewerConfiguration config = new DataViewerConfiguration();
+        config.setPlotTitle(headline);
+        config.setxAxisTitle(x);
+        config.setyAxisTitle(y);
+        config.showLegend(true);
+        config.setLegendInsidePlot(false);
+        
+        dataviewer.updateConfiguration(config);
+        PlotData plotData = new PlotData();
+        for (SmartHeating room : rooms) {
+            plotData.addTrace(createLineTrace(room.getMeasurements(), room.getName(), room.getTraceColour(), xArray));
+        }
+        dataviewer.updatePlot(plotData);
+     }
+
+     /**
+      * 
+      * @param rooms An SmartHeating object array with all rooms
+      * @param x   The x-axis label
+      * @param y    The y-axis label   
+      * @param headline The headline of the graph
+      */
+     public static void showBarPlot(SmartHeating[] rooms, String x, String y, String headline) {
         //DataViewer dataviewer = new DataViewer("heating");
         dataviewer.resetPlot();
         DataViewerConfiguration config = new DataViewerConfiguration();
@@ -49,10 +86,8 @@ public final class GraphGenerator {
 
         PlotData plotData = new PlotData();
         for (SmartHeating r : rooms) {
-            plotData.addTrace(createLineTrace(r.getMeasurements(), r.getName(), r.getTraceColour()));
+            plotData.addTrace(createBarTrace(r.getMeasurements(), r.getName(), r.getTraceColour()));
         }
-
-        
         dataviewer.updatePlot(plotData);
      }
 
