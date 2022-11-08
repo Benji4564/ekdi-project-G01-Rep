@@ -114,7 +114,6 @@ public class SmartHeating {
         s2.setTraceColour(TraceColour.GREEN);
 
         drawLinePlot( graphConfig, s2, s);
-
         Scanner keyboard = new Scanner(System.in);
         keyboard.nextLine();
         drawLinePlot(graphConfig, s);

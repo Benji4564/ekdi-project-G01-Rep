@@ -63,18 +63,6 @@
                       1
                     ],
                     "day": 1
-                  },
-                  {
-                    "hourlyTemperature": [],
-                    "hourlyUsage": [
-                      0
-                    ],
-                    "day": 2
-                  },
-                  {
-                    "hourlyTemperature": [],
-                    "hourlyUsage": [],
-                    "day": 5
                   }
                 ]
               },
@@ -84,23 +72,8 @@
               }
             ],
             "year": 2018
-          },
-          {
-            "months": [
-              {
-                "month": 1,
-                "days": []
-              }
-            ],
-            "year": 2019
           }
         ]
-      }
-    },
-    {
-      "name": "Schlafzimmer",
-      "measurements": {
-        "years": []
       }
     }
   ]
