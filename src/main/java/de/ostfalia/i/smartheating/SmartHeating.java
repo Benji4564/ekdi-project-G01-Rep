@@ -103,16 +103,11 @@ public class SmartHeating {
         s.setTraceColour(TraceColour.RED);
         s.setRoomName("Badezimmer");
         
-        s.addMeasurement(1234);
-        s.addMeasurement(1235);
-        s.addMeasurement(1237);
-        s.addMeasurement(1240);
-        s.addMeasurement(1241);
-        
-        s2.addMeasurement(1232);
-        s2.addMeasurement(1237);
         s2.setTraceColour(TraceColour.GREEN);
-
+        for(int i: utils.getDayData(2018, 1, 1, "Badezimmer")){
+           s.addMeasurement(i);
+        }
+        utils.addDay(2018, 1, 2, "Badezimmer");
         drawLinePlot( graphConfig, s2, s);
         Scanner keyboard = new Scanner(System.in);
         keyboard.nextLine();

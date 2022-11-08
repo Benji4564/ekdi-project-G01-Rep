@@ -21,7 +21,7 @@ public class utils {
      * @param roomName the room to find the data for
      * @return the hourly measurement data for the given parameters
      */
-    public static int[] getDayData(long yearValue, long monthValue, long dayValue, String roomName){
+    public static int[] getDayData(long yearValue, long monthValue, long dayValue,  String roomName){
         Object response = null;
         int[] data = null;
         JSONArray rooms = (JSONArray) SmartHeating.jsonObject.get("data");
@@ -43,7 +43,6 @@ public class utils {
                                     if (dayObject.get("day").equals( (Object)dayValue)) {
                                         response = dayObject.get("hourlyUsage");
                                         JSONArray hourly = (JSONArray) response;
-                                        System.out.println(hourly);
                                         data = new int[hourly.size()];
                                         for (int i = 0; i < hourly.size(); i++) {
                                             data[i] = (int) (long) hourly.get(i);
@@ -208,7 +207,7 @@ public class utils {
      * @param value the hourly usage to set
      * @return weather the operation was successful and the data was added, fails if the day cannot be found or there are 24 hours of data already
      */
-    public static boolean addMeasurementToDay(long yearValue, long monthValue, long dayValue, long value, String roomName){
+    public static boolean addMeasurementToDay(long yearValue, long monthValue, long dayValue, long value, long hour, String roomName){
         Object response = null;
         JSONObject jsonObject = SmartHeating.jsonObject;
         JSONArray rooms = (JSONArray) jsonObject.get("data");
@@ -230,8 +229,8 @@ public class utils {
                                     if (dayObject.get("day").equals( (Object)dayValue)) {
                                         response = dayObject.get("hourlyUsage");
                                         JSONArray hourly = (JSONArray) response;
-                                        if (hourly.size() < 24){
-                                            hourly.add(value);
+                                        if (hourly.size() <= 24){
+                                            hourly.set((int)hour, value);
                                             SmartHeating.jsonObject = jsonObject;
                                             writeToFile(jsonObject);
                                             return true;
@@ -282,8 +281,13 @@ public class utils {
                                 JSONObject newDay = new JSONObject();
                                 newDay.put("day", dayValue);
                                 JSONArray hourlyUsage = new JSONArray();
+                                for (int i = 0; i < 24; i++) {
+                                    hourlyUsage.add(0);
+                                }
                                 JSONArray hourlyTemperature = new JSONArray();
-                                Map<String, Object> hourlyUsageMap = new HashMap<>();
+                                for (int i = 0; i < 24; i++) {
+                                    hourlyTemperature.add(0);
+                                }
                                 newDay.put("hourlyUsage", hourlyUsage);
                                 newDay.put("hourlyTemperature", hourlyTemperature);
                                 days.add(newDay);
