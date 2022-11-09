@@ -7,6 +7,7 @@ import org.charts.dataviewer.api.trace.BarTrace;
 import org.charts.dataviewer.api.trace.LineTrace;
 import org.charts.dataviewer.utils.TraceColour;
 
+import org.charts.dataviewer.javafx.JavaFxDataViewer;
 import de.ostfalia.i.smartheating.SmartHeating;
 
 import java.util.Vector;
@@ -38,8 +39,8 @@ public final class GraphGenerator {
     /**
      * Show line plot on browser, navigate to http://localhost:8090/view/heating
      */
-    public static DataViewer dataviewer = new DataViewer("heating");
-
+    //public static DataViewer dataviewer = new DataViewer("heating");
+    public static JavaFxDataViewer dataviewer;
     /**
      * 
      * @param rooms An SmartHeating object array with all rooms

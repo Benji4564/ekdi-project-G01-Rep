@@ -205,6 +205,7 @@ public class utils {
      * @param dayValue the day to add the data to
      * @param roomName the room to find the data to
      * @param value the hourly usage to set
+     * @param hour the hour to set the value to. If the hour is already set, the value will be overwritten. If the hour is -1, the value will be added to the end of the array
      * @return weather the operation was successful and the data was added, fails if the day cannot be found or there are 24 hours of data already
      */
     public static boolean addMeasurementToDay(long yearValue, long monthValue, long dayValue, long value, long hour, String roomName){
@@ -229,11 +230,25 @@ public class utils {
                                     if (dayObject.get("day").equals( (Object)dayValue)) {
                                         response = dayObject.get("hourlyUsage");
                                         JSONArray hourly = (JSONArray) response;
-                                        if (hourly.size() <= 24){
+                                        if (hour >= 0){
                                             hourly.set((int)hour, value);
                                             SmartHeating.jsonObject = jsonObject;
                                             writeToFile(jsonObject);
                                             return true;
+                                        } else{
+                                            for (int i = hourly.size()-1; i >= 0; i--) {
+                                                if ((long)hourly.get(i) != 0){
+                                                    try {
+                                                        hourly.set(i + 1, value);
+                                                        SmartHeating.jsonObject = jsonObject;
+                                                        writeToFile(jsonObject);
+                                                        return true;
+                                                    } catch (Exception e) {
+                                                        return false;
+                                                    }
+                           
+                                                }
+                                            }
                                         }
                                     }
                                 }

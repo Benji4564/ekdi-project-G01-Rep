@@ -107,6 +107,8 @@ public class SmartHeating {
         for(int i: utils.getDayData(2018, 1, 1, "Badezimmer")){
            s.addMeasurement(i);
         }
+
+        utils.addMeasurementToDay(2018, 1, 1, 29, -1, "Badezimmer");
         utils.addDay(2018, 1, 2, "Badezimmer");
         drawLinePlot( graphConfig, s2, s);
         Scanner keyboard = new Scanner(System.in);
