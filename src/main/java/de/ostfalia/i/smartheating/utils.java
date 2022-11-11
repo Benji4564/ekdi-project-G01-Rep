@@ -421,4 +421,26 @@ public class utils {
         return true;                                           
     }
 
+
+    public static void createDataset(){ 
+        String room = "Badezimmer";
+        int[] months = {31,28,31,30,31,30,31,31,30,31,30,31};
+        int[] years = {2018};
+        int value = 20;
+        for(int year: years){
+            utils.addYear(year, room);
+            for(int month = 1; month <= 12; month ++){
+                utils.AddMonth(year, month, room);
+                for(int day = 1; day <= months[month-1]; day++){
+                    utils.addDay(year, month, day, room);
+                    for(int hour = 0; hour < 24; hour++){
+                        utils.addMeasurementToDay(year, month, day, value, hour, room);
+                        // increase value by a random number between 0 and 5
+                        value += (int)(Math.random() * 6);
+                    }
+                }
+            }
+        };
+    }
+
 }

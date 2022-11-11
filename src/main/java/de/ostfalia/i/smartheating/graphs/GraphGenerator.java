@@ -39,8 +39,8 @@ public final class GraphGenerator {
     /**
      * Show line plot on browser, navigate to http://localhost:8090/view/heating
      */
-    //public static DataViewer dataviewer = new DataViewer("heating");
-    public static JavaFxDataViewer dataviewer;
+    public static DataViewer dataviewer = new DataViewer("heating");
+    //public static JavaFxDataViewer dataviewer;
     /**
      * 
      * @param rooms An SmartHeating object array with all rooms
