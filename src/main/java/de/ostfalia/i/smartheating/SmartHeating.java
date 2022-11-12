@@ -359,9 +359,13 @@ public class SmartHeating {
         SmartHeating monthData = getMonthMeasurement(2022, 7, "Badezimmer", false, TraceColour.GREEN)[0];
         //SmartHeating weekData = getWeekData(2022, 7, 8, "Badezimmer")[0];
 
-        drawLinePlot(graphConfig, yearData, monthData);
-
-
+        
+        //drawLinePlot(graphConfig, yearData, monthData);
+        
+        
+        //utils.push();
+        //utils.pull();
+        
         // this makes the plot available on http://localhost:8090/view/heating
     }
 

@@ -1,16 +1,24 @@
 package de.ostfalia.i.smartheating;
+import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.Map;
-
+import java.sql.*;
 public class utils {
 
     /**
@@ -442,6 +450,48 @@ public class utils {
                 }
             }
         };
+    }
+
+    public static void pull(){
+    //write code to connect to database
+        String connectionUrl ="jdbc:mysql://db4free.net:3306/school";
+        String statement = "SELECT file FROM ekdi";
+        try {
+            String content = "";
+            Connection conn = DriverManager.getConnection(connectionUrl, "ekdiadmin", "12345678");
+            PreparedStatement ps = conn.prepareStatement(statement);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                content = rs.getString("file");
+            }
+            Object obj = null;
+            try (FileReader fileReader = new FileReader("src/main/data.json")){
+                obj = new JSONParser().parse(content);
+                SmartHeating.jsonObject= (JSONObject) obj;
+                writeToFile(SmartHeating.jsonObject);
+            } catch (Exception e) {
+                System.out.println(e);
+                System.err.println("Error while reading file");
+            }
+            
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    public static void push(){
+        //write code to connect to database
+        String connectionUrl ="jdbc:mysql://db4free.net:3306/school";
+        String statement = "UPDATE ekdi SET file = ?";
+        try {
+            Connection conn = DriverManager.getConnection(connectionUrl, "ekdiadmin", "12345678");
+            PreparedStatement ps = conn.prepareStatement(statement);
+            ps.setString(1, SmartHeating.jsonObject.toJSONString());
+            ps.executeUpdate();
+        } catch (Exception e) {
+
+        }
     }
 
 }
