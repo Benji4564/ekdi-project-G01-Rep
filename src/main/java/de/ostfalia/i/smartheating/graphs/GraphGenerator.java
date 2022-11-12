@@ -14,6 +14,10 @@ import java.util.Vector;
 import java.util.stream.IntStream;
 
 public final class GraphGenerator {
+
+   
+
+
     private static LineTrace<Object> createLineTrace(Vector<Double> measurements, String name, TraceColour traceColour, Object[] xArray) {
         LineTrace<Object> lineTrace = new LineTrace<>();
         if (xArray != null) {

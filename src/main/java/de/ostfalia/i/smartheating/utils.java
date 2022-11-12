@@ -79,9 +79,10 @@ public class utils {
                     JSONObject yearObject = (JSONObject) year;
                     if(yearObject.get("year").equals( (Object)yearValue)){
                         JSONArray months = (JSONArray) yearObject.get("months");
+
                         for (Object month : months) {
                             JSONObject monthObject = (JSONObject) month;
-                            if (monthObject.get("month").equals( (Object)monthValue)) {
+                            if ((long)monthObject.get("month") == monthValue) {
                                 
                                 JSONArray days = (JSONArray) monthObject.get("days");
                                 data = new int[days.size()];
@@ -91,8 +92,9 @@ public class utils {
                                     data[i] = (int) (long) dayObject.get("day");
                                     i++;
                                 }
+                                return data;
                             }
-                            return data;
+                            
                         }
                     }
                 }
@@ -176,7 +178,6 @@ public class utils {
         for (Object room : rooms) {
             JSONObject roomObject = (JSONObject) room;
             data[i] = (String) roomObject.get("name");
-            System.out.println(data[i]);
             i++;
         }
         return data;
@@ -422,11 +423,11 @@ public class utils {
     }
 
 
-    public static void createDataset(){ 
-        String room = "Badezimmer";
+    private static void createDataset(){ 
+        String room = "Wohnzimmer";
         int[] months = {31,28,31,30,31,30,31,31,30,31,30,31};
-        int[] years = {2018};
-        int value = 20;
+        int[] years = {2022};
+        int value = 50;
         for(int year: years){
             utils.addYear(year, room);
             for(int month = 1; month <= 12; month ++){
@@ -436,7 +437,7 @@ public class utils {
                     for(int hour = 0; hour < 24; hour++){
                         utils.addMeasurementToDay(year, month, day, value, hour, room);
                         // increase value by a random number between 0 and 5
-                        value += (int)(Math.random() * 6);
+                        value += (int)(Math.random() * 5);
                     }
                 }
             }
