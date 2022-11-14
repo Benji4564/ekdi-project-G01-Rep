@@ -445,7 +445,7 @@ public class utils {
                     for(int hour = 0; hour < 24; hour++){
                         utils.addMeasurementToDay(year, month, day, value, hour, room);
                         // increase value by a random number between 0 and 5
-                        value += (int)(Math.random() * 5);
+                        value += (float)(Math.random() * 5.0);
                     }
                 }
             }

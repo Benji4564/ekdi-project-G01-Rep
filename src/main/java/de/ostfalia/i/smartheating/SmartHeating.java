@@ -3,6 +3,7 @@ import de.ostfalia.i.smartheating.graphs.GraphGenerator;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.time.DayOfWeek;
 import java.time.Year;
 import java.util.Arrays;
 import java.util.Collection;
@@ -90,6 +91,11 @@ public class SmartHeating {
      */
     public void addMeasurement(double measurement) {
         measurements.add(measurement);
+    }
+
+    public void setMeasurements(Vector<Double> measurements) {
+        this.measurements.clear();
+        this.measurements.addAll(measurements);
     }
 
 
@@ -351,17 +357,10 @@ public class SmartHeating {
         int year = 2022;
         int month = 1;
         
-        SmartHeating[] response = getDayMeasurememt(year, month,1, "Badezimmer", false, TraceColour.GREEN);
+        SmartHeating weekData = getWeekData(2022, 7, 8, "Badezimmer")[0];
+        SmartHeating dayData = getDayMeasurememt(2022, 7, 8, "Badezimmer", false, TraceColour.BLUE)[0];
         
-        SmartHeating test = new SmartHeating();
-
-        SmartHeating yearData =  getYearData(2022, "Badezimmer")[0];
-        SmartHeating monthData = getMonthMeasurement(2022, 7, "Badezimmer", false, TraceColour.GREEN)[0];
-        //SmartHeating weekData = getWeekData(2022, 7, 8, "Badezimmer")[0];
-
-        
-        //drawLinePlot(graphConfig, yearData, monthData);
-        
+        drawLinePlot(graphConfig, dayData);
         
         //utils.push();
         //utils.pull();
