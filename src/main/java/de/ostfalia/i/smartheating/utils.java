@@ -423,11 +423,13 @@ public class utils {
     }
 
 
-    private static void createDataset(){ 
-        String room = "Wohnzimmer";
+    public static void createDataset(){ 
+        String room = "Schlafzimmer";
+        addRoom(room);
         int[] months = {31,28,31,30,31,30,31,31,30,31,30,31};
         int[] years = {2022};
-        int value = 50;
+        float value = 50.0f;
+        System.out.println("Creating dataset");
         for(int year: years){
             utils.addYear(year, room);
             for(int month = 1; month <= 12; month ++){
@@ -435,9 +437,10 @@ public class utils {
                 for(int day = 1; day <= months[month-1]; day++){
                     utils.addDay(year, month, day, room);
                     for(int hour = 0; hour < 24; hour++){
-                        utils.addMeasurementToDay(year, month, day, value, hour, room);
+                        utils.addMeasurementToDay(year, month, day, (long) value, hour, room);
                         // increase value by a random number between 0 and 5
-                        value += (int)(Math.random() * 5);
+                        value += 3.0f + (Math.random() * 20);
+                        System.out.println("Added value: " + value);
                     }
                 }
             }
