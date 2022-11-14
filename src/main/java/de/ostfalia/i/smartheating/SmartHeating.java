@@ -3,19 +3,13 @@ import de.ostfalia.i.smartheating.graphs.GraphGenerator;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.time.DayOfWeek;
-import java.time.Year;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Scanner;
 import java.util.Vector;
 
 import org.charts.dataviewer.utils.TraceColour;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -148,15 +142,12 @@ public class SmartHeating {
         
         int[] availableMonths = utils.getAvailableMonths(year, room);
         Arrays.sort(availableMonths);
-        int count = 1;
         for (int i = 1; i < 13; i++) {
             try {
                 SmartHeating month = getMonthMeasurement(year, i, room, false, TraceColour.BLACK)[0];
                 response.addMeasurement(month.getAverage());
-                count++;
             } catch (Exception e) {
                 response.addMeasurement(0);
-                count++;
             }
         }
 
@@ -217,7 +208,6 @@ public class SmartHeating {
 
 
         int[] data = utils.getAvailableDays(year, (long)month, room);
-        float previoussum = 0;
         int[] firstDay = utils.getDayData(year, month, data[0], room);
         //get average of first day
         int previousday = firstDay[0];
@@ -227,7 +217,6 @@ public class SmartHeating {
             previousday = firstDay[i];
         }
         dayAvg /= firstDay.length;
-        previoussum = dayAvg;
         for (int day = 0; day < data.length; day++){
             int[] dayData = utils.getDayData(year, month, day + 1, room);
 
@@ -244,8 +233,6 @@ public class SmartHeating {
 
 
             usage.addMeasurement(dayAvg);
-
-            previoussum = dayAvg;
  
         }
 
@@ -267,8 +254,6 @@ public class SmartHeating {
 		comboBox = new JComboBox();
 		comboBox.setSelectedIndex(-1);
 		frame.getContentPane().add(comboBox, BorderLayout.WEST);
-        comboBox.addItem("Room 1");
-        comboBox.addItem("Room 2");
 	}
 
     public static SmartHeating[] getWeekData(int year, int month, int day, String room) {
@@ -353,17 +338,11 @@ public class SmartHeating {
         graphConfig.x = "Hour";
         graphConfig.y = "Value";
         graphConfig.headline = "Smart Heating";
+        
+        //utils.createDataset();
+        utils.push();
+        
 
-        int year = 2022;
-        int month = 1;
-        
-        SmartHeating weekData = getWeekData(2022, 7, 8, "Badezimmer")[0];
-        SmartHeating dayData = getDayMeasurememt(2022, 7, 8, "Badezimmer", false, TraceColour.BLUE)[0];
-        
-        drawLinePlot(graphConfig, dayData);
-        
-        //utils.push();
-        //utils.pull();
         
         // this makes the plot available on http://localhost:8090/view/heating
     }

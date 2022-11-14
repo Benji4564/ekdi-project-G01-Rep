@@ -1,24 +1,16 @@
 package de.ostfalia.i.smartheating;
-import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.HashMap;
-import java.util.Map;
 import java.sql.*;
+
+
 public class utils {
 
     /**
@@ -431,11 +423,13 @@ public class utils {
     }
 
 
-    private static void createDataset(){ 
-        String room = "Wohnzimmer";
+    public static void createDataset(){ 
+        String room = "Schlafzimmer";
+        addRoom(room);
         int[] months = {31,28,31,30,31,30,31,31,30,31,30,31};
         int[] years = {2022};
-        int value = 50;
+        float value = 50.0f;
+        System.out.println("Creating dataset");
         for(int year: years){
             utils.addYear(year, room);
             for(int month = 1; month <= 12; month ++){
@@ -443,9 +437,10 @@ public class utils {
                 for(int day = 1; day <= months[month-1]; day++){
                     utils.addDay(year, month, day, room);
                     for(int hour = 0; hour < 24; hour++){
-                        utils.addMeasurementToDay(year, month, day, value, hour, room);
+                        utils.addMeasurementToDay(year, month, day, (long) value, hour, room);
                         // increase value by a random number between 0 and 5
-                        value += (float)(Math.random() * 5.0);
+                        value += 3.0f + (Math.random() * 20);
+                        System.out.println("Added value: " + value);
                     }
                 }
             }
