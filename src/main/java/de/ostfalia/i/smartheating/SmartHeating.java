@@ -3,18 +3,13 @@ import de.ostfalia.i.smartheating.graphs.GraphGenerator;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.time.Year;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Scanner;
 import java.util.Vector;
 
 import org.charts.dataviewer.utils.TraceColour;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
