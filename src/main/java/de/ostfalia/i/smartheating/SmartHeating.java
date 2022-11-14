@@ -161,7 +161,17 @@ public class SmartHeating {
 
 
 
-
+/**
+ * 
+ * @param year
+ * @param month
+ * @param day
+ * @param room
+ * @param drawAbsolute
+ * @param color
+ * @return a smartheating array, that contains the total used gas and usage per hour
+ * @throws FileNotFoundException
+ */
 
     public static SmartHeating[] getDayMeasurememt(int year, int month, int day, String room, boolean drawAbsolute, TraceColour color) throws FileNotFoundException{
 
@@ -191,7 +201,16 @@ public class SmartHeating {
 
         
     }
-
+/**
+ * 
+ * @param year
+ * @param month
+ * @param room
+ * @param drawAbsolute
+ * @param color
+ * @return The total used gas and average usage of the month
+ * @throws FileNotFoundException
+ */
     public static SmartHeating[] getMonthMeasurement(int year, int month, String room, boolean drawAbsolute, TraceColour color) throws FileNotFoundException{
 
         GraphConfig graphConfig = new GraphConfig();
@@ -255,6 +274,15 @@ public class SmartHeating {
 		comboBox.setSelectedIndex(-1);
 		frame.getContentPane().add(comboBox, BorderLayout.WEST);
 	}
+
+    /**
+     * 
+     * @param year
+     * @param month
+     * @param day
+     * @param room
+     * @return an array that containsa an average usage for each day
+     */
 
     public static SmartHeating[] getWeekData(int year, int month, int day, String room) {
         float[] data = new float[7];
@@ -330,6 +358,45 @@ public class SmartHeating {
         return usage;
     }
 
+    class Average{
+        String name = "";
+        double percent = 0;
+    }
+
+
+    
+
+    public static Average[] getDeviation(double threshold, SmartHeating...data){
+        double totalAvg = 0;
+        for(SmartHeating s: data){
+            totalAvg += s.getAverage();
+        }
+        totalAvg /= data.length;
+        Average[] averages = new Average[data.length];
+        int index = 0;
+        for(SmartHeating s: data){
+            
+            int counter = 0;
+            int total = 0;
+            for(double m: s.getMeasurements()){
+                total++;
+                if(m >= totalAvg * (1 + threshold)){
+                    counter++;
+                }
+            }
+            Average a = new SmartHeating().new Average();
+            a.name = s.getName();
+            a.percent = ((double)counter/(double)total) * 100;
+            averages[index] = a;
+            index++;
+        }
+        return averages;
+    }
+
+
+
+
+
     public static void main(String[] args) throws FileNotFoundException{
         init();
 
@@ -340,8 +407,12 @@ public class SmartHeating {
         graphConfig.headline = "Smart Heating";
         
         //utils.createDataset();
-        utils.push();
-        
+        //utils.push();
+        SmartHeating s = getDayMeasurememt(2022, 1, 5, "Schlafzimmer", false, TraceColour.RED)[0];
+        Average[] a = getDeviation(0.3, s);
+        for(Average avg: a){
+            System.out.println(avg.name + ": " + avg.percent + "%");
+        }
 
         
         // this makes the plot available on http://localhost:8090/view/heating

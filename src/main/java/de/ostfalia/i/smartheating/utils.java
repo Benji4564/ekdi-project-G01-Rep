@@ -209,7 +209,7 @@ public class utils {
      * @param hour the hour to set the value to. If the hour is already set, the value will be overwritten. If the hour is -1, the value will be added to the end of the array
      * @return weather the operation was successful and the data was added, fails if the day cannot be found or there are 24 hours of data already
      */
-    public static boolean addMeasurementToDay(long yearValue, long monthValue, long dayValue, long value, long hour, String roomName){
+    public static boolean addMeasurementToDay(long yearValue, long monthValue, long dayValue, double value, long hour, String roomName){
         Object response = null;
         JSONObject jsonObject = SmartHeating.jsonObject;
         JSONArray rooms = (JSONArray) jsonObject.get("data");
