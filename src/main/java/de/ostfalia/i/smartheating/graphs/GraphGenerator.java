@@ -14,33 +14,38 @@ import java.util.Vector;
 import java.util.stream.IntStream;
 
 public final class GraphGenerator {
-    private static LineTrace<Object> createLineTrace(Vector<Double> measurements, String name, TraceColour traceColour, Object[] xArray) {
+
+   
+
+
+    private static LineTrace<Object> createLineTrace(  Object[] xArray, SmartHeating smartHeating) {
         LineTrace<Object> lineTrace = new LineTrace<>();
         if (xArray != null) {
             lineTrace.setxArray(xArray);
         } else {
-            lineTrace.setxArray(IntStream.range(0, measurements.size()).boxed().toArray());
+            lineTrace.setxArray(IntStream.range(0, smartHeating.getMeasurements().size()).boxed().toArray());
         }
-        lineTrace.setyArray(measurements.toArray());
-        lineTrace.setTraceName(name);
-        lineTrace.setTraceColour(traceColour);
+        lineTrace.setyArray(smartHeating.getMeasurements().toArray());
+        lineTrace.setTraceName(smartHeating.getName());
+        lineTrace.setTraceColour(smartHeating.getTraceColour());
+
         return lineTrace;
     }
 
-    private static BarTrace<Object> createBarTrace(Vector<Double> measurements, String name, TraceColour traceColour) {
+    private static BarTrace<Object> createBarTrace(Vector<Double> measurements, String name, TraceColour traceColour, SmartHeating smartHeating) {
         BarTrace<Object> barTrace = new BarTrace<>();
         barTrace.setxArray(IntStream.rangeClosed(1, measurements.size()).boxed().toArray());
         barTrace.setyArray(measurements.toArray());
-        barTrace.setTraceName(name);
-        barTrace.setTraceColour(traceColour);
+        barTrace.setTraceName(smartHeating.getName());
+        barTrace.setTraceColour(smartHeating.getTraceColour());
         return barTrace;
     }
 
     /**
      * Show line plot on browser, navigate to http://localhost:8090/view/heating
      */
-    //public static DataViewer dataviewer = new DataViewer("heating");
-    public static JavaFxDataViewer dataviewer;
+    public static DataViewer dataviewer = new DataViewer("heating");
+    //public static JavaFxDataViewer dataviewer;
     /**
      * 
      * @param rooms An SmartHeating object array with all rooms
@@ -62,8 +67,10 @@ public final class GraphGenerator {
         dataviewer.updateConfiguration(config);
         PlotData plotData = new PlotData();
         for (SmartHeating room : rooms) {
-            plotData.addTrace(createLineTrace(room.getMeasurements(), room.getName(), room.getTraceColour(), xArray));
+            plotData.addTrace(createLineTrace( xArray, room));
+
         }
+
         dataviewer.updatePlot(plotData);
      }
 
@@ -87,7 +94,8 @@ public final class GraphGenerator {
 
         PlotData plotData = new PlotData();
         for (SmartHeating r : rooms) {
-            plotData.addTrace(createBarTrace(r.getMeasurements(), r.getName(), r.getTraceColour()));
+            plotData.addTrace(createBarTrace(r.getMeasurements(), r.getName(), r.getTraceColour(), r));        
+
         }
         dataviewer.updatePlot(plotData);
      }

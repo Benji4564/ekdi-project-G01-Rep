@@ -1,15 +1,15 @@
 package de.ostfalia.i.smartheating;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.sql.*;
+
 
 public class utils {
 
@@ -79,9 +79,10 @@ public class utils {
                     JSONObject yearObject = (JSONObject) year;
                     if(yearObject.get("year").equals( (Object)yearValue)){
                         JSONArray months = (JSONArray) yearObject.get("months");
+
                         for (Object month : months) {
                             JSONObject monthObject = (JSONObject) month;
-                            if (monthObject.get("month").equals( (Object)monthValue)) {
+                            if ((long)monthObject.get("month") == monthValue) {
                                 
                                 JSONArray days = (JSONArray) monthObject.get("days");
                                 data = new int[days.size()];
@@ -91,8 +92,9 @@ public class utils {
                                     data[i] = (int) (long) dayObject.get("day");
                                     i++;
                                 }
+                                return data;
                             }
-                            return data;
+                            
                         }
                     }
                 }
@@ -176,7 +178,6 @@ public class utils {
         for (Object room : rooms) {
             JSONObject roomObject = (JSONObject) room;
             data[i] = (String) roomObject.get("name");
-            System.out.println(data[i]);
             i++;
         }
         return data;
@@ -208,7 +209,7 @@ public class utils {
      * @param hour the hour to set the value to. If the hour is already set, the value will be overwritten. If the hour is -1, the value will be added to the end of the array
      * @return weather the operation was successful and the data was added, fails if the day cannot be found or there are 24 hours of data already
      */
-    public static boolean addMeasurementToDay(long yearValue, long monthValue, long dayValue, long value, long hour, String roomName){
+    public static boolean addMeasurementToDay(long yearValue, long monthValue, long dayValue, double value, long hour, String roomName){
         Object response = null;
         JSONObject jsonObject = SmartHeating.jsonObject;
         JSONArray rooms = (JSONArray) jsonObject.get("data");
@@ -419,6 +420,73 @@ public class utils {
         SmartHeating.jsonObject = jsonObject;
         writeToFile(jsonObject);
         return true;                                           
+    }
+
+
+    public static void createDataset(){ 
+        String room = "Schlafzimmer";
+        addRoom(room);
+        int[] months = {31,28,31,30,31,30,31,31,30,31,30,31};
+        int[] years = {2022};
+        float value = 50.0f;
+        System.out.println("Creating dataset");
+        for(int year: years){
+            utils.addYear(year, room);
+            for(int month = 1; month <= 12; month ++){
+                utils.AddMonth(year, month, room);
+                for(int day = 1; day <= months[month-1]; day++){
+                    utils.addDay(year, month, day, room);
+                    for(int hour = 0; hour < 24; hour++){
+                        utils.addMeasurementToDay(year, month, day, (long) value, hour, room);
+                        // increase value by a random number between 0 and 5
+                        value += 3.0f + (Math.random() * 20);
+                        System.out.println("Added value: " + value);
+                    }
+                }
+            }
+        };
+    }
+
+    public static void pull(){
+    //write code to connect to database
+        String connectionUrl ="jdbc:mysql://db4free.net:3306/school";
+        String statement = "SELECT file FROM ekdi";
+        try {
+            String content = "";
+            Connection conn = DriverManager.getConnection(connectionUrl, "ekdiadmin", "12345678");
+            PreparedStatement ps = conn.prepareStatement(statement);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                content = rs.getString("file");
+            }
+            Object obj = null;
+            try (FileReader fileReader = new FileReader("src/main/data.json")){
+                obj = new JSONParser().parse(content);
+                SmartHeating.jsonObject= (JSONObject) obj;
+                writeToFile(SmartHeating.jsonObject);
+            } catch (Exception e) {
+                System.out.println(e);
+                System.err.println("Error while reading file");
+            }
+            
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    public static void push(){
+        //write code to connect to database
+        String connectionUrl ="jdbc:mysql://db4free.net:3306/school";
+        String statement = "UPDATE ekdi SET file = ?";
+        try {
+            Connection conn = DriverManager.getConnection(connectionUrl, "ekdiadmin", "12345678");
+            PreparedStatement ps = conn.prepareStatement(statement);
+            ps.setString(1, SmartHeating.jsonObject.toJSONString());
+            ps.executeUpdate();
+        } catch (Exception e) {
+
+        }
     }
 
 }
