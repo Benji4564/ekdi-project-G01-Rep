@@ -83,7 +83,7 @@ public class utils {
                         for (Object month : months) {
                             JSONObject monthObject = (JSONObject) month;
                             if ((long)monthObject.get("month") == monthValue) {
-                                
+                               
                                 JSONArray days = (JSONArray) monthObject.get("days");
                                 data = new int[days.size()];
                                 int i = 0;
@@ -92,7 +92,7 @@ public class utils {
                                     data[i] = (int) (long) dayObject.get("day");
                                     i++;
                                 }
-                                return data;
+                            return data;
                             }
                             
                         }

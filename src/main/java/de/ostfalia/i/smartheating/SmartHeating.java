@@ -28,16 +28,13 @@ public class SmartHeating {
     private TraceColour traceColour = TraceColour.BLUE;
     private JComboBox comboBox;
     private JFrame frame;
-    
-
-    public SmartHeating() {
-        initialize();
-    }
+    public static GraphConfig graphConfig = new GraphConfig();
+    public static String[] räume = new String[] {"Wohnzimmer", "Küche", "Schlafzimmer", "Badezimmer", "Flur"};
 
     /**
      * initialize the app by reading the data from the file
      */
-    private static void init(){
+    public static void init(){
         Object obj = null;
         try (FileReader fileReader = new FileReader("src/main/data.json")){
             obj = new JSONParser().parse(fileReader);
@@ -47,7 +44,20 @@ public class SmartHeating {
             System.out.println(e);
             System.err.println("Error while reading file");
         }
+        update();
+        
     }
+
+    public static void update(){
+        räume = utils.getAvailableRooms();
+    }
+
+
+    public SmartHeating() {
+        initialize();
+    }
+
+
 
 
     /**
@@ -147,8 +157,10 @@ public class SmartHeating {
                 SmartHeating month = getMonthMeasurement(year, i, room, false, TraceColour.BLACK)[0];
                 response.addMeasurement(month.getAverage());
             } catch (Exception e) {
+                System.out.println(e);
                 response.addMeasurement(0);
             }
+
         }
 
 
@@ -399,7 +411,7 @@ public class SmartHeating {
         init();
 
     
-        GraphConfig graphConfig = new GraphConfig();
+        graphConfig = new GraphConfig();
         graphConfig.x = "Hour";
         graphConfig.y = "Value";
         graphConfig.headline = "Smart Heating";
@@ -410,6 +422,7 @@ public class SmartHeating {
         for(Average avg: a){
             System.out.println(avg.name + ": " + avg.percent + "%");
         }
+        
 
         
         // this makes the plot available on http://localhost:8090/view/heating
