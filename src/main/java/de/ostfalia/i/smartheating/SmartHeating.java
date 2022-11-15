@@ -10,11 +10,11 @@ import org.charts.dataviewer.utils.TraceColour;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-class GraphConfig {
-    public String x = "Hour";
+class GraphConfig { //anlegen einer Klasse für die folgenden Parameter, damit alle in einem Objekt sind
+    public String x = "Hour"; 
     public String y = "Value";
     public String headline = "Smart Heating";
-    public Object[] xArray = null;
+    public Object[] xArray = null; //Array wir angelegt  
 }
 
 public class SmartHeating {
