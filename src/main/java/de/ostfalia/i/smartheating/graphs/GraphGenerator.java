@@ -7,7 +7,6 @@ import org.charts.dataviewer.api.trace.BarTrace;
 import org.charts.dataviewer.api.trace.LineTrace;
 import org.charts.dataviewer.utils.TraceColour;
 
-import org.charts.dataviewer.javafx.JavaFxDataViewer;
 import de.ostfalia.i.smartheating.SmartHeating;
 
 import java.util.Vector;

@@ -342,9 +342,7 @@ public class SmartHeating {
             usage.addMeasurement(f);
         }
 
-
         return new SmartHeating[] {usage};
-
     }
 
     public static float[] getDailyUsage(int year, int month, int day, String room) {
@@ -406,8 +404,7 @@ public class SmartHeating {
         graphConfig.y = "Value";
         graphConfig.headline = "Smart Heating";
         
-        //utils.createDataset();
-        //utils.push();
+
         SmartHeating s = getDayMeasurememt(2022, 1, 5, "Schlafzimmer", false, TraceColour.RED)[0];
         Average[] a = getDeviation(0.3, s);
         for(Average avg: a){
@@ -417,6 +414,4 @@ public class SmartHeating {
         
         // this makes the plot available on http://localhost:8090/view/heating
     }
-
-
 }
