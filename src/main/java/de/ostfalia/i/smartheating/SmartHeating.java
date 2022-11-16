@@ -27,7 +27,6 @@ public class SmartHeating {
     private final Vector<Double> measurements = new Vector<>();
     private TraceColour traceColour = TraceColour.BLUE;
     private JComboBox comboBox;
-    private JFrame frame;
     public static GraphConfig graphConfig = new GraphConfig();
     public static String[] räume = new String[] {"Wohnzimmer", "Küche", "Schlafzimmer", "Badezimmer", "Flur"};
 
@@ -44,20 +43,8 @@ public class SmartHeating {
             System.out.println(e);
             System.err.println("Error while reading file");
         }
-        update();
         
     }
-
-    public static void update(){
-        räume = utils.getAvailableRooms();
-    }
-
-
-    public SmartHeating() {
-        initialize();
-    }
-
-
 
 
     /**
@@ -119,12 +106,31 @@ public class SmartHeating {
      */
     public double getAverage() {
         double measurementsSum = 0;
+        int count = 0;
         for (double m : measurements) {
+            if(m == 0){
+                count++;
+            }
             measurementsSum += m;
         }
-        return measurementsSum / measurements.size();
+        return measurementsSum / (measurements.size()- count);
     }
 
+
+    public static double berechnungVerbrauch(int year, int month, int day, String room){
+        SmartHeating usage = getDayMeasurememt(year, month, day, room, false, TraceColour.PURPLE)[0];
+        usage.getMeasurements();
+        double totalUsage = 0;
+        int count = 0;
+        for (double m: usage.getMeasurements()) {
+            if(m == 0){
+                count++;
+            }
+            totalUsage += m;
+        }
+        return totalUsage;
+    }
+    
     /**
      * @param config The configuration for the graph to be generated based on the config object
      * @param rooms An array of rooms to be displayed in the graph based on the SmartHeating class
@@ -132,7 +138,6 @@ public class SmartHeating {
      */
     public static void drawLinePlot(GraphConfig config,  SmartHeating... rooms ) {
         GraphGenerator.showLinePlot( rooms, config.x, config.y, config.headline, config.xArray);
-
     }
 
     public static void drawLinePlotByArray(GraphConfig config,  SmartHeating[] rooms ) {
@@ -185,7 +190,7 @@ public class SmartHeating {
  * @throws FileNotFoundException
  */
 
-    public static SmartHeating[] getDayMeasurememt(int year, int month, int day, String room, boolean drawAbsolute, TraceColour color) throws FileNotFoundException{
+    public static SmartHeating[] getDayMeasurememt(int year, int month, int day, String room, boolean drawAbsolute, TraceColour color){
 
         GraphConfig graphConfig = new GraphConfig();
         graphConfig.x = "Hour";
@@ -210,9 +215,9 @@ public class SmartHeating {
             previoussum = data[i];
         }
         return new SmartHeating[] {usage, absoHeating};
-
-        
     }
+
+    
 /**
  * 
  * @param year
@@ -274,18 +279,7 @@ public class SmartHeating {
     /**
      * initialize the window
      */
-    private void initialize() {
-		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		JToolBar toolBar = new JToolBar();
-		frame.getContentPane().add(toolBar, BorderLayout.NORTH);
-		
-		comboBox = new JComboBox();
-		comboBox.setSelectedIndex(-1);
-		frame.getContentPane().add(comboBox, BorderLayout.WEST);
-	}
+
 
     /**
      * 
@@ -404,27 +398,20 @@ public class SmartHeating {
     }
 
 
-
-
+    
 
     public static void main(String[] args) throws FileNotFoundException{
         init();
-
-    
-        graphConfig = new GraphConfig();
-        graphConfig.x = "Hour";
-        graphConfig.y = "Value";
-        graphConfig.headline = "Smart Heating";
-        
-
-        SmartHeating s = getDayMeasurememt(2022, 1, 5, "Schlafzimmer", false, TraceColour.RED)[0];
+        SmartHeating s = getDayMeasurememt(frame.year, 1, 5, "Schlafzimmer", false, TraceColour.RED)[0];
         Average[] a = getDeviation(0.3, s);
+        
+        
+        
+        
+        
         for(Average avg: a){
             System.out.println(avg.name + ": " + avg.percent + "%");
         }
-        
-
-        
-        // this makes the plot available on http://localhost:8090/view/heating
+        //this makes the plot available on http://localhost:8090/view/heating
     }
 }
