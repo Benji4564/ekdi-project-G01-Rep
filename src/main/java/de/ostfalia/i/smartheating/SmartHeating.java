@@ -156,6 +156,7 @@ public class SmartHeating {
         SmartHeating response = new SmartHeating();
         
         int[] availableMonths = utils.getAvailableMonths(year, room);
+        response.setName(room);
         Arrays.sort(availableMonths);
         for (int i = 1; i < 13; i++) {
             try {

@@ -96,15 +96,52 @@ public class frame {
 	public static JList list_Raum;	
 	private JTextField txtBox_AddRoom;
 	public static JCheckBox chckbxDurchschnitt;
-	public static double erlaubteAbweichung = 0.2;
+	public static double erlaubteAbweichung = 0.5;
 	public static double prozentAbweichungen = 1;
+	public static boolean showAvg = false;
+	public static int wasAnzeige = 0;
+	public static SmartHeating[] allAverages = null;
+
+
+	public static SmartHeating erstellungGraphen(TraceColour[] allColors, int colorIndex, int index, SmartHeating object, String i){
+		
+		Average[] averagesUp = getDeviationUp(erlaubteAbweichung, object);
+		for(Average avg: averagesUp){
+			if(avg.percent>=prozentAbweichungen){
+				System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
+				JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "über dem Durchschnittswert.");
+			}										
+		}
+		Average[] averagesDown = getDeviationDown(erlaubteAbweichung, object);
+		for(Average avg: averagesDown){
+			if(avg.percent>=prozentAbweichungen){
+				System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
+				JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "unter dem Durchschnittswert.");
+			}										
+		}
+		TraceColour color = allColors[colorIndex];
+		object.setTraceColour(color);
+		System.out.println(showAvg);
+		if(showAvg){
+			
+			SmartHeating object_avg = new SmartHeating();
+			double avg = object.getAverage();
+			for(int q = 0; q < object.getMeasurements().size(); q++){
+				object_avg.addMeasurement(avg);
+			}
+			object_avg.setTraceColour(color);
+			object_avg.setRoomName("Durchschnitt " + i);
+
+			allAverages[index] = object_avg;
+			
+		}
+		return object;
+	}
 	class Average{
         String name = "";
         double percent = 0;
     }
 
-
-    
 
     public static Average[] getDeviationUp(double threshold, SmartHeating...data){
         double totalAvg = 0;
@@ -278,13 +315,7 @@ public class frame {
 		btnAnzeige.setBounds(395, 367, 215, 39);
 		frmSmartheater.getContentPane().add(btnAnzeige);
 		
-		// Button für die Einstellungen
-		JButton btnSettings = new JButton("");
-		btnSettings.setBounds(5, 5, 55, 52);
-		frmSmartheater.getContentPane().add(btnSettings);
-		
-		
-		
+				
 		//------------------------------------------------------------------------------------
 		//---------------------------------Heizkörperwerte------------------------------------
 		//------------------------------------------------------------------------------------
@@ -696,7 +727,7 @@ public class frame {
                     month = Integer.parseInt(txtBox_StartMonat.getText());
                     year = Integer.parseInt(txtBox_StartJahr.getText());
                     SmartHeating[] allMeasuSmartHeatings = new SmartHeating[allRooms.size()];
-					SmartHeating[] allAverages = new SmartHeating[allRooms.size()];
+					allAverages = new SmartHeating[allRooms.size()];
 					SmartHeating[] allMax = new SmartHeating[allRooms.size()];
 					TraceColour[] allColors = {TraceColour.RED, TraceColour.BLUE, TraceColour.GREEN, TraceColour.YELLOW, TraceColour.ORANGE, TraceColour.PURPLE, TraceColour.CYAN, TraceColour.BLACK};
                     //double kosten = SmartHeating.berechnungVerbrauch(year, month, day, roomToAdd) * Integer.parseInt(textField_2.getText());
@@ -708,36 +739,41 @@ public class frame {
 								int colorIndex = 0;
                                 for(String i: allRooms){																		
                                     SmartHeating object = SmartHeating.getDayMeasurememt(year, month, day, i, false, TraceColour.PURPLE)[0];
-                                    allMeasuSmartHeatings[index] = object;
-									Average[] averagesUp = getDeviationUp(erlaubteAbweichung, object);
-									for(Average avg: averagesUp){
-										if(avg.percent>=prozentAbweichungen){
-											System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
-											JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "über dem Durchschnittswert.");
-										}										
-									}
-									Average[] averagesDown = getDeviationDown(erlaubteAbweichung, object);
-									for(Average avg: averagesDown){
-										if(avg.percent>=prozentAbweichungen){
-											System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
-											JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "unter dem Durchschnittswert.");
-										}										
-									}
+                                    
+									allMeasuSmartHeatings[index] = object;
+									object = erstellungGraphen(allColors, colorIndex, index, object, i);
+									// Average[] averagesUp = getDeviationUp(erlaubteAbweichung, object);
+									// for(Average avg: averagesUp){
+									// 	if(avg.percent>=prozentAbweichungen){
+									// 		System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
+									// 		JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "über dem Durchschnittswert.");
+									// 	}										
+									// }
+									// Average[] averagesDown = getDeviationDown(erlaubteAbweichung, object);
+									// for(Average avg: averagesDown){
+									// 	if(avg.percent>=prozentAbweichungen){
+									// 		System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
+									// 		JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "unter dem Durchschnittswert.");
+									// 	}										
+									// }
+									// TraceColour color = allColors[colorIndex];
+									// object.setTraceColour(color);
+									// System.out.println(showAvg);
+									// if(showAvg){
+										
+									// 	SmartHeating object_avg = new SmartHeating();
+									// 	double avg = object.getAverage();
+									// 	for(int q = 0; q < object.getMeasurements().size(); q++){
+									// 		object_avg.addMeasurement(avg);
+									// 	}
+									// 	object_avg.setTraceColour(color);
+									// 	object_avg.setRoomName("Durchschnitt " + i);
 
-									TraceColour color = allColors[colorIndex];
-									object.setTraceColour(color);
+									// 	allAverages[index] = object_avg;
+									// }
 									
-									if(chckbxDurchschnitt.isSelected()){
-										SmartHeating object_avg = new SmartHeating();
-										double avg = object.getAverage();
-										for(int q = 0; q < object.getMeasurements().size(); q++){
-											object_avg.addMeasurement(avg);
-										}
-										object_avg.setTraceColour(color);
-										object_avg.setRoomName("Durchschnitt " + i);
 
-										allAverages[index] = object_avg;
-									}
+
 									
                                     index++;
 									colorIndex++;
@@ -748,7 +784,8 @@ public class frame {
                                 }
 
 								allMax = allMeasuSmartHeatings;
-								if(chckbxDurchschnitt.isSelected()){
+								if(showAvg){
+									
 									allMax = new SmartHeating [allRooms.size() *2];
 									int c = 0;
 									for(SmartHeating s : allMeasuSmartHeatings){
@@ -778,34 +815,35 @@ public class frame {
                                 for(String i: allRooms){
                                     SmartHeating object = SmartHeating.getWeekData(year, month, day, i)[0];
                                     allMeasuSmartHeatings[index] = object;
-									Average[] averagesUp = getDeviationUp(erlaubteAbweichung, object);
-									for(Average avg: averagesUp){
-										if(avg.percent>=prozentAbweichungen){
-											System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
-											JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "über dem Durchschnittswert.");
-										}										
-									}
-									Average[] averagesDown = getDeviationDown(erlaubteAbweichung, object);
-									for(Average avg: averagesDown){
-										if(avg.percent>=prozentAbweichungen){
-											System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
-											JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "unter dem Durchschnittswert.");
-										}										
-									}
-									TraceColour color = allColors[colorIndex];
-									object.setTraceColour(color);
+									object = erstellungGraphen(allColors, colorIndex, index, object, i);
+									// Average[] averagesUp = getDeviationUp(erlaubteAbweichung, object);
+									// for(Average avg: averagesUp){
+									// 	if(avg.percent>=prozentAbweichungen){
+									// 		System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
+									// 		JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "über dem Durchschnittswert.");
+									// 	}										
+									// }
+									// Average[] averagesDown = getDeviationDown(erlaubteAbweichung, object);
+									// for(Average avg: averagesDown){
+									// 	if(avg.percent>=prozentAbweichungen){
+									// 		System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
+									// 		JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "unter dem Durchschnittswert.");
+									// 	}										
+									// }
+									// TraceColour color = allColors[colorIndex];
+									// object.setTraceColour(color);
 									
-									if(chckbxDurchschnitt.isSelected()){
-										SmartHeating object_avg = new SmartHeating();
-										double avg = object.getAverage();
-										for(int q = 0; q < object.getMeasurements().size(); q++){
-											object_avg.addMeasurement(avg);
-										}
-										object_avg.setTraceColour(color);
-										object_avg.setRoomName("Durchschnitt " + i);
+									// if(showAvg){
+									// 	SmartHeating object_avg = new SmartHeating();
+									// 	double avg = object.getAverage();
+									// 	for(int q = 0; q < object.getMeasurements().size(); q++){
+									// 		object_avg.addMeasurement(avg);
+									// 	}
+									// 	object_avg.setTraceColour(color);
+									// 	object_avg.setRoomName("Durchschnitt " + i);
 
-										allAverages[index] = object_avg;
-									}
+									// 	allAverages[index] = object_avg;
+									// }
 									
                                     index++;
 									colorIndex++;
@@ -816,7 +854,7 @@ public class frame {
                                 }
 
 								allMax = allMeasuSmartHeatings;
-								if(chckbxDurchschnitt.isSelected()){
+								if(showAvg){
 									allMax = new SmartHeating [allRooms.size() *2];
 									int c = 0;
 									for(SmartHeating s : allMeasuSmartHeatings){
@@ -844,34 +882,35 @@ public class frame {
                                 for(String i: allRooms){
                                     SmartHeating object = SmartHeating.getMonthMeasurement(year, month,  i, false, TraceColour.ORANGE)[0];
                                     allMeasuSmartHeatings[index] = object;
-									Average[] averagesUp = getDeviationUp(erlaubteAbweichung, object);
-									for(Average avg: averagesUp){
-										if(avg.percent>=prozentAbweichungen){
-											System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
-											JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "über dem Durchschnittswert.");
-										}										
-									}
-									Average[] averagesDown = getDeviationDown(erlaubteAbweichung, object);
-									for(Average avg: averagesDown){
-										if(avg.percent>=prozentAbweichungen){
-											System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
-											JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "unter dem Durchschnittswert.");
-										}										
-									}
-									TraceColour color = allColors[colorIndex];
-									object.setTraceColour(color);
+									object = erstellungGraphen(allColors, colorIndex, index, object, i);
+									// Average[] averagesUp = getDeviationUp(erlaubteAbweichung, object);
+									// for(Average avg: averagesUp){
+									// 	if(avg.percent>=prozentAbweichungen){
+									// 		System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
+									// 		JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "über dem Durchschnittswert.");
+									// 	}										
+									// }
+									// Average[] averagesDown = getDeviationDown(erlaubteAbweichung, object);
+									// for(Average avg: averagesDown){
+									// 	if(avg.percent>=prozentAbweichungen){
+									// 		System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
+									// 		JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "unter dem Durchschnittswert.");
+									// 	}										
+									// }
+									// TraceColour color = allColors[colorIndex];
+									// object.setTraceColour(color);
 									
-									if(chckbxDurchschnitt.isSelected()){
-										SmartHeating object_avg = new SmartHeating();
-										double avg = object.getAverage();
-										for(int q = 0; q < object.getMeasurements().size(); q++){
-											object_avg.addMeasurement(avg);
-										}
-										object_avg.setTraceColour(color);
-										object_avg.setRoomName("Durchschnitt " + i);
+									// if(showAvg){
+									// 	SmartHeating object_avg = new SmartHeating();
+									// 	double avg = object.getAverage();
+									// 	for(int q = 0; q < object.getMeasurements().size(); q++){
+									// 		object_avg.addMeasurement(avg);
+									// 	}
+									// 	object_avg.setTraceColour(color);
+									// 	object_avg.setRoomName("Durchschnitt " + i);
 
-										allAverages[index] = object_avg;
-									}
+									// 	allAverages[index] = object_avg;
+									// }
 									
                                     index++;
 									colorIndex++;
@@ -882,7 +921,7 @@ public class frame {
                                 }
 
 								allMax = allMeasuSmartHeatings;
-								if(chckbxDurchschnitt.isSelected()){
+								if(showAvg){
 									allMax = new SmartHeating [allRooms.size() *2];
 									int c = 0;
 									for(SmartHeating s : allMeasuSmartHeatings){
@@ -911,34 +950,35 @@ public class frame {
                                 for(String i: allRooms){
                                     SmartHeating object = SmartHeating.getYearData(year,  i)[0];
                                     allMeasuSmartHeatings[index] = object;
-									Average[] averagesUp = getDeviationUp(erlaubteAbweichung, object);
-									for(Average avg: averagesUp){
-										if(avg.percent>=prozentAbweichungen){
-											System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
-											JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "über dem Durchschnittswert.");
-										}										
-									}
-									Average[] averagesDown = getDeviationDown(erlaubteAbweichung, object);
-									for(Average avg: averagesDown){
-										if(avg.percent>=prozentAbweichungen){
-											System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
-											JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "unter dem Durchschnittswert.");
-										}										
-									}
-									TraceColour color = allColors[colorIndex];
-									object.setTraceColour(color);
+									object = erstellungGraphen(allColors, colorIndex, index, object, i);
+									// Average[] averagesUp = getDeviationUp(erlaubteAbweichung, object);
+									// for(Average avg: averagesUp){
+									// 	if(avg.percent>=prozentAbweichungen){
+									// 		System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
+									// 		JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "über dem Durchschnittswert.");
+									// 	}										
+									// }
+									// Average[] averagesDown = getDeviationDown(erlaubteAbweichung, object);
+									// for(Average avg: averagesDown){
+									// 	if(avg.percent>=prozentAbweichungen){
+									// 		System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
+									// 		JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "unter dem Durchschnittswert.");
+									// 	}										
+									// }
+									// TraceColour color = allColors[colorIndex];
+									// object.setTraceColour(color);
 									
-									if(chckbxDurchschnitt.isSelected()){
-										SmartHeating object_avg = new SmartHeating();
-										double avg = object.getAverage();
-										for(int q = 0; q < object.getMeasurements().size(); q++){
-											object_avg.addMeasurement(avg);
-										}
-										object_avg.setTraceColour(color);
-										object_avg.setRoomName("Durchschnitt " + i);
+									// if(showAvg){
+									// 	SmartHeating object_avg = new SmartHeating();
+									// 	double avg = object.getAverage();
+									// 	for(int q = 0; q < object.getMeasurements().size(); q++){
+									// 		object_avg.addMeasurement(avg);
+									// 	}
+									// 	object_avg.setTraceColour(color);
+									// 	object_avg.setRoomName("Durchschnitt " + i);
 
-										allAverages[index] = object_avg;
-									}
+									// 	allAverages[index] = object_avg;
+									// }
 									
                                     index++;
 									colorIndex++;
@@ -949,7 +989,7 @@ public class frame {
                                 }
 
 								allMax = allMeasuSmartHeatings;
-								if(chckbxDurchschnitt.isSelected()){
+								if(showAvg){
 									allMax = new SmartHeating [allRooms.size() *2];
 									int c = 0;
 									for(SmartHeating s : allMeasuSmartHeatings){
@@ -1039,6 +1079,8 @@ public class frame {
 		comboBox_Was.setBounds(10, 113, 224, 22);
         comboBox_Was.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+				wasAnzeige = comboBox_Was.getSelectedIndex();
+				System.out.println(wasAnzeige);
             }
         });
 		panel_1.add(comboBox_Was);
@@ -1046,6 +1088,7 @@ public class frame {
 		chckbxDurchschnitt = new JCheckBox("Anzeige \r⌀");
 		chckbxDurchschnitt.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				showAvg = chckbxDurchschnitt.isSelected();
 				System.out.println( "Durchschnitt: " + chckbxDurchschnitt.isSelected());
 			}
 		});
