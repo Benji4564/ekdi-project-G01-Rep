@@ -83,7 +83,7 @@ public class utils {
                         for (Object month : months) {
                             JSONObject monthObject = (JSONObject) month;
                             if ((long)monthObject.get("month") == monthValue) {
-                                
+                               
                                 JSONArray days = (JSONArray) monthObject.get("days");
                                 data = new int[days.size()];
                                 int i = 0;
@@ -92,7 +92,7 @@ public class utils {
                                     data[i] = (int) (long) dayObject.get("day");
                                     i++;
                                 }
-                                return data;
+                            return data;
                             }
                             
                         }
@@ -204,13 +204,14 @@ public class utils {
      * @param yearValue the year to add the data to
      * @param monthValue the month to add the data to
      * @param dayValue the day to add the data to
-     * @param roomName the room to find the data to
      * @param value the hourly usage to set
      * @param hour the hour to set the value to. If the hour is already set, the value will be overwritten. If the hour is -1, the value will be added to the end of the array
+     * @param roomName the room to find the data to
      * @return weather the operation was successful and the data was added, fails if the day cannot be found or there are 24 hours of data already
      */
     public static boolean addMeasurementToDay(long yearValue, long monthValue, long dayValue, double value, long hour, String roomName){
         Object response = null;
+
         JSONObject jsonObject = SmartHeating.jsonObject;
         JSONArray rooms = (JSONArray) jsonObject.get("data");
         for (Object room : rooms) {
@@ -232,7 +233,7 @@ public class utils {
                                         response = dayObject.get("hourlyUsage");
                                         JSONArray hourly = (JSONArray) response;
                                         if (hour >= 0){
-                                            hourly.set((int)hour, value);
+                                            hourly.set((int)hour, (long)value);
                                             SmartHeating.jsonObject = jsonObject;
                                             writeToFile(jsonObject);
                                             return true;
@@ -240,7 +241,7 @@ public class utils {
                                             for (int i = hourly.size()-1; i >= 0; i--) {
                                                 if ((long)hourly.get(i) != 0){
                                                     try {
-                                                        hourly.set(i + 1, value);
+                                                        hourly.set(i , (long)value);
                                                         SmartHeating.jsonObject = jsonObject;
                                                         writeToFile(jsonObject);
                                                         return true;
