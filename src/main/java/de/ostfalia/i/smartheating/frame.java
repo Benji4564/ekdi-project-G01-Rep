@@ -11,50 +11,33 @@ import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import java.awt.Font;
 import java.awt.Panel;
-import java.awt.Dimension;
 import java.awt.Color;
-import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.MouseInputAdapter;
+import javax.swing.event.MouseInputListener;
 import javax.swing.table.DefaultTableModel;
 
 import org.charts.dataviewer.utils.TraceColour;
 
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.MatteBorder;
 import javax.swing.border.BevelBorder;
 import javax.swing.SwingConstants;
 import javax.swing.border.SoftBevelBorder;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 
-import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-
 import java.awt.event.ActionListener;
-import java.awt.event.InputMethodListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-
-import java.awt.ComponentOrientation;
-import java.awt.SystemColor;
-import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
-
-import java.awt.event.InputMethodListener;
-import java.awt.event.InputMethodEvent;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -62,6 +45,11 @@ import java.awt.event.KeyEvent;
 import javax.swing.JList;
 
 import javax.swing.AbstractListModel;
+
+class Average{
+	String name = "";
+	double percent = 0;
+}
 public class frame {
 	
 
@@ -73,18 +61,15 @@ public class frame {
 	private JTextField txtBox_Monat;
 	private JTextField txtBox_Jahr;
 	private JTextField txtBox_Stunde;
-	private JTextField txtBox_Minute;
 	private JTextField txtBox_Heizwert;
 	DefaultTableModel model;
-	private JTextField txtBox_Raum;
-	private JTextField textField_2;
+	public static JTextField textField_2;
     public static JComboBox comboBox_Was;
     private JTextField txtBox_StartTag;
     private JTextField txtBox_StartMonat;
     private JTextField txtBox_StartJahr;
     public static JComboBox comboBox_Abstand;
     public int abstand;
-	//get current day
     public static int day = java.time.LocalDate.now().getDayOfMonth();
     public static int month = java.time.LocalDate.now().getMonthValue();
     public static int year = java.time.LocalDate.now().getYear();
@@ -96,32 +81,50 @@ public class frame {
 	public static JList list_Raum;	
 	private JTextField txtBox_AddRoom;
 	public static JCheckBox chckbxDurchschnitt;
-	public static double erlaubteAbweichung = 0.5;
-	public static double prozentAbweichungen = 1;
+	public static double erlaubteAbweichung = 0.5; //hier
+	public static double prozentAbweichungen = 5; //hier
 	public static boolean showAvg = false;
 	public static int wasAnzeige = 0;
-	public static SmartHeating[] allAverages = null;
+	public static SmartHeating[] allAverages = null;	
+	public static JTextField txtBox_erlaubteAbweichung;
+	public static JTextField txtBox_prozentAbweichungen;
 
 
 	public static SmartHeating erstellungGraphen(TraceColour[] allColors, int colorIndex, int index, SmartHeating object, String i){
+		SmartHeating.graphConfig.y = "Messwerte";
+		if(wasAnzeige == 1){
+			SmartHeating.graphConfig.y = "Kosten in cent";
+			SmartHeating preisWerte = new SmartHeating();
+			for(double u: object.getMeasurements()){				
+				preisWerte.addMeasurement(u * Float.parseFloat(textField_2.getText()));
+				System.out.println(u * Float.parseFloat(textField_2.getText()));
+			}
+			
+			object = preisWerte;
+
+		}
+
 		
+		erlaubteAbweichung = Double.parseDouble(txtBox_erlaubteAbweichung.getText());
+		prozentAbweichungen = Double.parseDouble(txtBox_prozentAbweichungen.getText());
+
 		Average[] averagesUp = getDeviationUp(erlaubteAbweichung, object);
 		for(Average avg: averagesUp){
 			if(avg.percent>=prozentAbweichungen){
-				System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
-				JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "über dem Durchschnittswert.");
+				System.out.println("Abweichung in: "+ avg.name + ": " + avg.percent + "%");
+				JOptionPane.showMessageDialog(null, "Abweichung in/im " + avg.name + " liegt um " + avg.percent + "% über dem Durchschnittswert.");
 			}										
 		}
 		Average[] averagesDown = getDeviationDown(erlaubteAbweichung, object);
 		for(Average avg: averagesDown){
 			if(avg.percent>=prozentAbweichungen){
 				System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
-				JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "unter dem Durchschnittswert.");
+				//JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% unter dem Durchschnittswert.");
 			}										
 		}
 		TraceColour color = allColors[colorIndex];
 		object.setTraceColour(color);
-		System.out.println(showAvg);
+
 		if(showAvg){
 			
 			SmartHeating object_avg = new SmartHeating();
@@ -135,12 +138,10 @@ public class frame {
 			allAverages[index] = object_avg;
 			
 		}
+
 		return object;
 	}
-	class Average{
-        String name = "";
-        double percent = 0;
-    }
+
 
 
     public static Average[] getDeviationUp(double threshold, SmartHeating...data){
@@ -161,17 +162,17 @@ public class frame {
                     counter++;
                 }
             }
-            Average a = new frame().new Average();
+            Average a = new Average();
             a.name = s.getName();
 
 			//Round to 2 decimal places
 			a.percent = Math.round((double)counter / total * 10000) / 100.0;
-            //a.percent = Math.round(((double)counter/(double)total) * 100);
             averages[index] = a;
             index++;
         }
         return averages;
     }
+
 
 	public static Average[] getDeviationDown(double threshold, SmartHeating...data){
         double totalAvg = 0;
@@ -191,7 +192,7 @@ public class frame {
                     counter++;
                 }
             }
-            Average a = new frame().new Average();
+            Average a = new  Average();
             a.name = s.getName();
             a.percent = Math.round((double)counter / total * 10000) / 100.0;
             averages[index] = a;
@@ -199,6 +200,7 @@ public class frame {
         }
         return averages;
     }
+
 
 	/**
 	 * Launch the application.
@@ -218,6 +220,8 @@ public class frame {
 			}
 		});
 	}
+
+
 	public static void update(){
         SmartHeating.räume = utils.getAvailableRooms();
 		list_Raum.setModel(new AbstractListModel() {
@@ -240,6 +244,8 @@ public class frame {
 		});		
     }
 
+
+
 	/**
 	 * Create the application.
 	 */
@@ -255,6 +261,7 @@ public class frame {
         }
 		
 	}
+
 
 	/**
 	 * Initialize the contents of the frame.
@@ -315,7 +322,7 @@ public class frame {
 		btnAnzeige.setBounds(395, 367, 215, 39);
 		frmSmartheater.getContentPane().add(btnAnzeige);
 		
-				
+		
 		//------------------------------------------------------------------------------------
 		//---------------------------------Heizkörperwerte------------------------------------
 		//------------------------------------------------------------------------------------
@@ -331,11 +338,13 @@ public class frame {
 		frmHeizwerte.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frmHeizwerte.getContentPane().setLayout(null);
 		
+		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		scrollPane.setBounds(511, 164, 452, 339);
 		frmHeizwerte.getContentPane().add(scrollPane);
-		
+
+
 		table = new JTable();	
 		table.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
@@ -351,22 +360,25 @@ public class frame {
 		});
 		table.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		model = new DefaultTableModel();		
-		Object[] column = {"Raum", "Heizk\u00F6rperwert", "Tag", "Monat", "Jahr", "Stunde"};
+		Object[] column = {"Raum", "Zählerstand", "Tag", "Monat", "Jahr", "Stunde"};
 		final Object[] row = new Object[6];
 		model.setColumnIdentifiers(column);
 		table.setModel(model);
 		scrollPane.setViewportView(table);
 		
+
 		JLabel lblbersicht = new JLabel("Übersicht");
 		lblbersicht.setFont(new Font("Segoe UI Black", Font.PLAIN, 18));
 		lblbersicht.setBounds(511, 122, 96, 22);
 		frmHeizwerte.getContentPane().add(lblbersicht);
 		
+
 		JLabel lblHeizkoerperwertHinzufuegen = new JLabel("Heizkörperwert hinzufügen");
 		lblHeizkoerperwertHinzufuegen.setFont(new Font("Segoe UI Black", Font.PLAIN, 18));
 		lblHeizkoerperwertHinzufuegen.setBounds(48, 122, 265, 22);
 		frmHeizwerte.getContentPane().add(lblHeizkoerperwertHinzufuegen);
 		
+
 		JButton btnAnsicht = new JButton("Ansicht");
 		btnAnsicht.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -380,6 +392,7 @@ public class frame {
 		btnAnsicht.setBounds(48, 31, 89, 23);
 		frmHeizwerte.getContentPane().add(btnAnsicht);
 		
+
 		JButton btnHome = new JButton("Hauptmenü");
 		btnHome.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -393,27 +406,32 @@ public class frame {
 		btnHome.setBounds(828, 31, 135, 23);
 		frmHeizwerte.getContentPane().add(btnHome);
 		
+
 		Panel panel = new Panel();
 		panel.setBackground(new Color(255, 255, 255));
 		panel.setBounds(48, 162, 366, 341);
 		frmHeizwerte.getContentPane().add(panel);
 		panel.setLayout(null);
 		
+
 		JLabel lblRaumauswahl = new JLabel("Raumauswahl");
 		lblRaumauswahl.setBounds(10, 11, 88, 22);
 		panel.add(lblRaumauswahl);
 		lblRaumauswahl.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 14));
 		
+
 		JLabel lblZeitpunkt = new JLabel("Zeitpunkt");
 		lblZeitpunkt.setBounds(10, 156, 113, 22);
 		panel.add(lblZeitpunkt);
 		lblZeitpunkt.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 14));
 		
+
 		JLabel lblDatum = new JLabel("Datum");
 		lblDatum.setBounds(10, 180, 113, 22);
 		panel.add(lblDatum);
 		lblDatum.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		
+
 		txtBox_Tag = new JTextField();
 		txtBox_Tag.setBounds(10, 202, 40, 20);
 		panel.add(txtBox_Tag);
@@ -421,12 +439,14 @@ public class frame {
 		txtBox_Tag.setColumns(10);
 		txtBox_Tag.setText(Integer.toString(day));
 		
+
 		JLabel lblPunkt = new JLabel(".");
 		lblPunkt.setBounds(47, 200, 13, 22);
 		panel.add(lblPunkt);
 		lblPunkt.setHorizontalAlignment(SwingConstants.CENTER);
 		lblPunkt.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		
+
 		txtBox_Monat = new JTextField();
 		txtBox_Monat.setBounds(58, 202, 40, 20);
 		panel.add(txtBox_Monat);
@@ -434,12 +454,14 @@ public class frame {
 		txtBox_Monat.setColumns(10);
 		txtBox_Monat.setText(Integer.toString(month));
 		
+
 		JLabel lblPunkt_1 = new JLabel(".");
 		lblPunkt_1.setBounds(96, 200, 13, 22);
 		panel.add(lblPunkt_1);
 		lblPunkt_1.setHorizontalAlignment(SwingConstants.CENTER);
 		lblPunkt_1.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		
+
 		txtBox_Jahr = new JTextField();
 		txtBox_Jahr.setBounds(110, 202, 63, 20);
 		panel.add(txtBox_Jahr);
@@ -447,11 +469,13 @@ public class frame {
 		txtBox_Jahr.setColumns(10);
 		txtBox_Jahr.setText(Integer.toString(year));
 		
+
 		JLabel lblUhrzeit = new JLabel("Uhrzeit");
 		lblUhrzeit.setBounds(10, 230, 113, 22);
 		panel.add(lblUhrzeit);
 		lblUhrzeit.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		
+
 		txtBox_Stunde = new JTextField();
 		txtBox_Stunde.setBounds(10, 254, 40, 20);
 		panel.add(txtBox_Stunde);
@@ -459,6 +483,7 @@ public class frame {
 		txtBox_Stunde.setColumns(10);
 		txtBox_Stunde.setText(Integer.toString(hour));
 		
+
 		JLabel lblHeizkörperwert = new JLabel("Heizkörperwert");
 		lblHeizkörperwert.setBounds(10, 285, 113, 22);
 		panel.add(lblHeizkörperwert);
@@ -470,6 +495,7 @@ public class frame {
 		panel.add(lblHeizkörperwertEinheit);
 		lblHeizkörperwertEinheit.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 14));
 		
+
 		txtBox_Heizwert = new JTextField();
 		txtBox_Heizwert.setFont(new Font("Segoe UI Black", Font.PLAIN, 12));
 		txtBox_Heizwert.setColumns(10);
@@ -477,17 +503,20 @@ public class frame {
 		panel.add(txtBox_Heizwert);
 		txtBox_Heizwert.setText("0");
 
+
 		JLabel lblRoomAdd = new JLabel("Raum hinzufügen");
 		lblRoomAdd.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		lblRoomAdd.setBounds(10, 126, 99, 22);
 		panel.add(lblRoomAdd);
 		
+
 		txtBox_AddRoom = new JTextField();
 		txtBox_AddRoom.setFont(new Font("Segoe UI Black", Font.PLAIN, 12));
 		txtBox_AddRoom.setColumns(10);
 		txtBox_AddRoom.setBounds(110, 127, 192, 20);
 		panel.add(txtBox_AddRoom);
 		
+
 		JButton btnAddRoom = new JButton("+");
 		btnAddRoom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {				
@@ -502,8 +531,35 @@ public class frame {
 		scrollPane_Raum.setBounds(10, 36, 323, 74);
 		panel.add(scrollPane_Raum);
 
+
 		list_Raum = new JList();
 		list_Raum.setFont(new Font("Segoe UI Black", Font.PLAIN, 12));
+		list_Raum.addMouseListener(new MouseInputAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int tempHour = 1;
+				model.setRowCount(0);
+				try {
+					for(int i: utils.getDayData(year, month, day, list_Raum.getSelectedValue().toString())){
+						if(i!=0){
+							row[0] = roomToAdd;
+							row[1] = i;
+							row[2] = Integer.toString(day);
+							row[3] = Integer.toString(month);
+							row[4] = Integer.toString(year);
+							row[5] = Integer.toString(tempHour);
+							model.addRow(row);
+							tempHour++;
+						}
+
+	
+					}
+				} catch (Exception o) {
+					// TODO: handle exception
+				}
+	
+			}
+		});
 		list_Raum.setModel(new AbstractListModel() {
 			String[] values =  SmartHeating.räume;
 			public int getSize() {
@@ -525,14 +581,14 @@ public class frame {
 				}
 			}
 		});
-		
-		
+				
 		
 		JButton btnDelete = new JButton("Löschen");
 		btnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int i = table.getSelectedRow();
 				if(i>=0) {
+					
 					model.removeRow(i);
 					JOptionPane.showMessageDialog(null, "Wert wurde erfolgreich gelöscht.");
 				}
@@ -544,45 +600,38 @@ public class frame {
 		btnDelete.setBounds(850, 509, 113, 23);
 		frmHeizwerte.getContentPane().add(btnDelete);
 		
+		
 		JButton btnExport = new JButton("Exportieren");
 		btnExport.setBounds(511, 509, 135, 23);
 		frmHeizwerte.getContentPane().add(btnExport);
+		btnExport.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String[] headers = new String[] {"Heizkörper", "Zählerstand", "Tag", "Monat", "Jahr", "Stunde"};
+				List<Measurement> contacts = new ArrayList<>();
+				for(int month: utils.getAvailableMonths(year, roomToAdd)){
+					for(int day: utils.getAvailableDays(year, month, roomToAdd)){
+						int index = 1;
+						for(int hour: utils.getDayData(year, month, day, roomToAdd)){
+							contacts.add(new Measurement(roomToAdd, Integer.toString(hour) , Integer.toString(day), Integer.toString(month), Integer.toString(year), Integer.toString(index)));
+							index++;
+						}
+					}
+				}
+				
+				
+				
+				String fileName = day + "_" + month + "_" + year + "_" + hour + "_" + roomToAdd + ".xlsx";
+				ExcelFileExporter excelFileExporter = new ExcelFileExporter();
+				excelFileExporter.exportExcelFile(contacts, headers, fileName);
+			}
+		});
 		
+
 		JButton btnAdd = new JButton("Hinzufügen");
 		btnAdd.setBounds(285, 509, 129, 23);
 		frmHeizwerte.getContentPane().add(btnAdd);
-		
-		JButton btnUpdate = new JButton("Update");
-		btnUpdate.setBounds(196, 509, 79, 23);
-		frmHeizwerte.getContentPane().add(btnUpdate);
-		
-		JButton btnClear = new JButton("Leeren");
-		btnClear.setBounds(48, 509, 89, 23);
-		frmHeizwerte.getContentPane().add(btnClear);
-		btnClear.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				list_Room.setSelectedIndex(-1);
-				txtBox_Heizwert.setText("");
-				txtBox_Tag.setText("");
-				txtBox_Monat.setText("");
-				txtBox_Jahr.setText("");
-				txtBox_Stunde.setText("");
-			}
-		});
-		btnUpdate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int i = table.getSelectedRow();
-				model.setValueAt(list_Room.getSelectedIndex(), i, 0);
-				model.setValueAt(txtBox_Heizwert.getText(), i, 1);
-				model.setValueAt(txtBox_Tag.getText(), i, 2);
-				model.setValueAt(txtBox_Monat.getText(), i, 3);
-				model.setValueAt(txtBox_Jahr.getText(), i, 4);
-				model.setValueAt(txtBox_Stunde.getText(), i, 5);
-			}
-		});
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
 				year = Integer.parseInt(txtBox_Jahr.getText());
 				month = Integer.parseInt(txtBox_Monat.getText());
 				day = Integer.parseInt(txtBox_Tag.getText());
@@ -590,7 +639,6 @@ public class frame {
 				utils.addYear(year, roomToAdd);
 				utils.AddMonth(year, month, roomToAdd);
 				utils.addDay(year, month, day, roomToAdd);
-
 
 				int measurement = Integer.parseInt(txtBox_Heizwert.getText());
 				if(roomToAdd == "") {
@@ -610,10 +658,27 @@ public class frame {
 					row[5] = txtBox_Stunde.getText();
 	 				model.addRow(row);
 					
-					JOptionPane.showMessageDialog(null, "Wert wurde erfolgreich hinzugefügt.");
+					//JOptionPane.showMessageDialog(null, "Wert wurde erfolgreich hinzugefügt.");
 				}				
 			}
 		}); 
+
+
+		JButton btnClear = new JButton("Leeren");
+		btnClear.setBounds(48, 509, 89, 23);
+		frmHeizwerte.getContentPane().add(btnClear);
+		btnClear.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				list_Room.setSelectedIndex(-1);
+				txtBox_Heizwert.setText("");
+				txtBox_Tag.setText("");
+				txtBox_Monat.setText("");
+				txtBox_Jahr.setText("");
+				txtBox_Stunde.setText("");
+			}
+		});
+
+		
 		
 		//------------------------------------------------------------------------------------
 		//----------------------------------------Ansicht-------------------------------------
@@ -630,6 +695,7 @@ public class frame {
 		frmAnzeige.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frmAnzeige.getContentPane().setLayout(null);
 		
+
 		JButton btnHome2 = new JButton("Hauptmenü");
 		btnHome2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -650,48 +716,48 @@ public class frame {
 		btnUebersicht.setBounds(48, 31, 89, 23);
 		frmAnzeige.getContentPane().add(btnUebersicht);
 		
+
 		JPanel panel2 = new JPanel();
 		panel2.setBounds(48, 155, 366, 208);
 		panel2.setBackground(new Color(255, 255, 255));
 		frmAnzeige.getContentPane().add(panel2);
 		panel2.setLayout(null);
 		
+
 		JLabel lblRooms = new JLabel("Räume");
 		lblRooms.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
 		lblRooms.setBounds(10, 11, 61, 26);
 		panel2.add(lblRooms);
 		
+
 		JLabel lblTime = new JLabel("Zeitraum");
 		lblTime.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
 		lblTime.setBounds(10, 120, 61, 26);
 		panel2.add(lblTime);
 		
+
         JLabel lblBis = new JLabel("bis");
 		lblBis.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		lblBis.setBounds(10, 144, 20, 26);
 		panel2.add(lblBis);
 		
+
 		txtBox_StartTag = new JTextField();
 		txtBox_StartTag.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		txtBox_StartTag.setBounds(40, 148, 37, 20);
         txtBox_StartTag.setText(Integer.toString(day));
-
-
-		
 		panel2.add(txtBox_StartTag);
 		txtBox_StartTag.setColumns(10);
         
+
 		txtBox_StartMonat = new JTextField();
 		txtBox_StartMonat.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		txtBox_StartMonat.setColumns(10);
 		txtBox_StartMonat.setBounds(87, 147, 37, 20);
         txtBox_StartMonat.setText(Integer.toString(month));
-        
-        
 		panel2.add(txtBox_StartMonat);
 		
-		
-		
+
 		txtBox_StartJahr = new JTextField();
 		txtBox_StartJahr.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		txtBox_StartJahr.setColumns(10);
@@ -704,19 +770,19 @@ public class frame {
         });
 		panel2.add(txtBox_StartJahr);
 		
+
 		JLabel lblVon_Punkt = new JLabel(".");
 		lblVon_Punkt.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		lblVon_Punkt.setBounds(81, 144, 20, 26);
 		panel2.add(lblVon_Punkt);
 		
+
 		JLabel lblVon_Punkt_1 = new JLabel(".");
 		lblVon_Punkt_1.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		lblVon_Punkt_1.setBounds(127, 144, 20, 26);
 		panel2.add(lblVon_Punkt_1);
 		
-		
-		
-		
+
 		JButton btnShow = new JButton("Anzeigen");
 		btnShow.setFont(new Font("Segoe UI Black", Font.PLAIN, 15));
 		btnShow.addActionListener(new ActionListener() {
@@ -737,49 +803,23 @@ public class frame {
                             try {
                                 int index = 0;
 								int colorIndex = 0;
-                                for(String i: allRooms){																		
+                                for(String i: allRooms){
+									System.out.println("Room: " + i);																		
                                     SmartHeating object = SmartHeating.getDayMeasurememt(year, month, day, i, false, TraceColour.PURPLE)[0];
                                     
-									allMeasuSmartHeatings[index] = object;
+									
 									object = erstellungGraphen(allColors, colorIndex, index, object, i);
-									// Average[] averagesUp = getDeviationUp(erlaubteAbweichung, object);
-									// for(Average avg: averagesUp){
-									// 	if(avg.percent>=prozentAbweichungen){
-									// 		System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
-									// 		JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "über dem Durchschnittswert.");
-									// 	}										
-									// }
-									// Average[] averagesDown = getDeviationDown(erlaubteAbweichung, object);
-									// for(Average avg: averagesDown){
-									// 	if(avg.percent>=prozentAbweichungen){
-									// 		System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
-									// 		JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "unter dem Durchschnittswert.");
-									// 	}										
-									// }
-									// TraceColour color = allColors[colorIndex];
-									// object.setTraceColour(color);
-									// System.out.println(showAvg);
-									// if(showAvg){
-										
-									// 	SmartHeating object_avg = new SmartHeating();
-									// 	double avg = object.getAverage();
-									// 	for(int q = 0; q < object.getMeasurements().size(); q++){
-									// 		object_avg.addMeasurement(avg);
-									// 	}
-									// 	object_avg.setTraceColour(color);
-									// 	object_avg.setRoomName("Durchschnitt " + i);
-
-									// 	allAverages[index] = object_avg;
-									// }
-									
-
-
-									
-                                    index++;
+									allMeasuSmartHeatings[index] = object;
+									for (double z: object.getMeasurements()) {
+										System.out.println(z);
+									}
+									index++;
 									colorIndex++;
 									if(colorIndex == allColors.length ){
 										colorIndex = 0;
 									}
+
+									object.setName(i);
 
                                 }
 
@@ -804,8 +844,7 @@ public class frame {
 								System.out.println("Fehler bei der Auswertung");
                                 System.out.println(a);
                             }
-                        
-                            
+							
                             break;
                         case 1:
                             try {
@@ -814,37 +853,9 @@ public class frame {
 								int colorIndex = 0;
                                 for(String i: allRooms){
                                     SmartHeating object = SmartHeating.getWeekData(year, month, day, i)[0];
-                                    allMeasuSmartHeatings[index] = object;
+                                    
 									object = erstellungGraphen(allColors, colorIndex, index, object, i);
-									// Average[] averagesUp = getDeviationUp(erlaubteAbweichung, object);
-									// for(Average avg: averagesUp){
-									// 	if(avg.percent>=prozentAbweichungen){
-									// 		System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
-									// 		JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "über dem Durchschnittswert.");
-									// 	}										
-									// }
-									// Average[] averagesDown = getDeviationDown(erlaubteAbweichung, object);
-									// for(Average avg: averagesDown){
-									// 	if(avg.percent>=prozentAbweichungen){
-									// 		System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
-									// 		JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "unter dem Durchschnittswert.");
-									// 	}										
-									// }
-									// TraceColour color = allColors[colorIndex];
-									// object.setTraceColour(color);
-									
-									// if(showAvg){
-									// 	SmartHeating object_avg = new SmartHeating();
-									// 	double avg = object.getAverage();
-									// 	for(int q = 0; q < object.getMeasurements().size(); q++){
-									// 		object_avg.addMeasurement(avg);
-									// 	}
-									// 	object_avg.setTraceColour(color);
-									// 	object_avg.setRoomName("Durchschnitt " + i);
-
-									// 	allAverages[index] = object_avg;
-									// }
-									
+									allMeasuSmartHeatings[index] = object;
                                     index++;
 									colorIndex++;
 									if(colorIndex == allColors.length ){
@@ -881,37 +892,8 @@ public class frame {
 								int colorIndex = 0;
                                 for(String i: allRooms){
                                     SmartHeating object = SmartHeating.getMonthMeasurement(year, month,  i, false, TraceColour.ORANGE)[0];
-                                    allMeasuSmartHeatings[index] = object;
 									object = erstellungGraphen(allColors, colorIndex, index, object, i);
-									// Average[] averagesUp = getDeviationUp(erlaubteAbweichung, object);
-									// for(Average avg: averagesUp){
-									// 	if(avg.percent>=prozentAbweichungen){
-									// 		System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
-									// 		JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "über dem Durchschnittswert.");
-									// 	}										
-									// }
-									// Average[] averagesDown = getDeviationDown(erlaubteAbweichung, object);
-									// for(Average avg: averagesDown){
-									// 	if(avg.percent>=prozentAbweichungen){
-									// 		System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
-									// 		JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "unter dem Durchschnittswert.");
-									// 	}										
-									// }
-									// TraceColour color = allColors[colorIndex];
-									// object.setTraceColour(color);
-									
-									// if(showAvg){
-									// 	SmartHeating object_avg = new SmartHeating();
-									// 	double avg = object.getAverage();
-									// 	for(int q = 0; q < object.getMeasurements().size(); q++){
-									// 		object_avg.addMeasurement(avg);
-									// 	}
-									// 	object_avg.setTraceColour(color);
-									// 	object_avg.setRoomName("Durchschnitt " + i);
-
-									// 	allAverages[index] = object_avg;
-									// }
-									
+									allMeasuSmartHeatings[index] = object;								
                                     index++;
 									colorIndex++;
 									if(colorIndex == allColors.length ){
@@ -949,37 +931,9 @@ public class frame {
 								int colorIndex = 0;
                                 for(String i: allRooms){
                                     SmartHeating object = SmartHeating.getYearData(year,  i)[0];
-                                    allMeasuSmartHeatings[index] = object;
+                                    
 									object = erstellungGraphen(allColors, colorIndex, index, object, i);
-									// Average[] averagesUp = getDeviationUp(erlaubteAbweichung, object);
-									// for(Average avg: averagesUp){
-									// 	if(avg.percent>=prozentAbweichungen){
-									// 		System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
-									// 		JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "über dem Durchschnittswert.");
-									// 	}										
-									// }
-									// Average[] averagesDown = getDeviationDown(erlaubteAbweichung, object);
-									// for(Average avg: averagesDown){
-									// 	if(avg.percent>=prozentAbweichungen){
-									// 		System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
-									// 		JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% " + "unter dem Durchschnittswert.");
-									// 	}										
-									// }
-									// TraceColour color = allColors[colorIndex];
-									// object.setTraceColour(color);
-									
-									// if(showAvg){
-									// 	SmartHeating object_avg = new SmartHeating();
-									// 	double avg = object.getAverage();
-									// 	for(int q = 0; q < object.getMeasurements().size(); q++){
-									// 		object_avg.addMeasurement(avg);
-									// 	}
-									// 	object_avg.setTraceColour(color);
-									// 	object_avg.setRoomName("Durchschnitt " + i);
-
-									// 	allAverages[index] = object_avg;
-									// }
-									
+									allMeasuSmartHeatings[index] = object;									
                                     index++;
 									colorIndex++;
 									if(colorIndex == allColors.length ){
@@ -1020,7 +974,7 @@ public class frame {
                 
 			}
 		});
-		btnShow.setBounds(434, 455, 143, 52);
+		btnShow.setBounds(820, 439, 143, 52);
 		frmAnzeige.getContentPane().add(btnShow);
 		
 		JLabel lblFilter = new JLabel("Filter");
@@ -1052,9 +1006,12 @@ public class frame {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
-                    allRooms = list_Room.getSelectedValuesList();
+                    
+
  
                 }
+				System.out.println("Liste: " + list_Room.getSelectedValuesList());
+				allRooms = list_Room.getSelectedValuesList();
             }
         });
 		JPanel panel_1 = new JPanel();
@@ -1063,19 +1020,22 @@ public class frame {
 		panel_1.setBackground(new Color(255, 255, 255));
 		frmAnzeige.getContentPane().add(panel_1);
 		
+
 		JLabel lblAbstnde = new JLabel("Abstände");
 		lblAbstnde.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
 		lblAbstnde.setBounds(10, 11, 61, 26);
 		panel_1.add(lblAbstnde);
 		
+
 		JLabel lblWasSollAngezeigt = new JLabel("Was soll angezeigt werden?");
 		lblWasSollAngezeigt.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
 		lblWasSollAngezeigt.setBounds(10, 83, 163, 26);
 		panel_1.add(lblWasSollAngezeigt);
 		
+
 		JComboBox comboBox_Was = new JComboBox();
 		comboBox_Was.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		comboBox_Was.setModel(new DefaultComboBoxModel(new String[] {"Heizkörperwerte", "Kosten"}));
+		comboBox_Was.setModel(new DefaultComboBoxModel(new String[] {"Verlauf Verbrauch", "Verlauf Kosten", "Verlauf Heizkörperwerte"}));
 		comboBox_Was.setBounds(10, 113, 224, 22);
         comboBox_Was.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -1085,6 +1045,7 @@ public class frame {
         });
 		panel_1.add(comboBox_Was);
 
+		//checkbox für Durchschnitt
 		chckbxDurchschnitt = new JCheckBox("Anzeige \r⌀");
 		chckbxDurchschnitt.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -1095,7 +1056,7 @@ public class frame {
 		chckbxDurchschnitt.setBounds(240, 112, 96, 26);
 		panel_1.add(chckbxDurchschnitt);
         
-		
+		//combobox für die Anzeige der Auswahl der möglichen Abstände
 		JComboBox comboBox_Abstand = new JComboBox();
 		comboBox_Abstand.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		comboBox_Abstand.setModel(new DefaultComboBoxModel(new String[] {"Tage", "Wochen", "Monate", "Jahre"}));
@@ -1107,16 +1068,17 @@ public class frame {
         });
 		panel_1.add(comboBox_Abstand);
 
-
-
 		
 		JLabel lblGaspreis = new JLabel("Gaspreis");
 		lblGaspreis.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
 		lblGaspreis.setBounds(10, 146, 163, 26);
 		panel_1.add(lblGaspreis);
 		
+		//Textfeld für Gaspreis
 		textField_2 = new JTextField();
 		textField_2.setBounds(10, 177, 96, 20);
+		textField_2.setFont(new Font("Segoe UI", Font.BOLD, 11));
+		textField_2.setText("18");
 		panel_1.add(textField_2);
 		textField_2.setColumns(10);
 		
@@ -1124,13 +1086,54 @@ public class frame {
 		lbl_PreisEinheit.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		lbl_PreisEinheit.setBounds(116, 177, 163, 26);
 		panel_1.add(lbl_PreisEinheit);
-		
+
 		JLabel lblAnzeigeeinstellungen = new JLabel("Anzeigeeinstellungen");
 		lblAnzeigeeinstellungen.setFont(new Font("Segoe UI Black", Font.PLAIN, 18));
 		lblAnzeigeeinstellungen.setBounds(597, 119, 231, 26);
 		frmAnzeige.getContentPane().add(lblAnzeigeeinstellungen);
+
+
+		JPanel panel_Alarm = new JPanel();
+		panel_Alarm.setLayout(null);
+		panel_Alarm.setBackground(Color.WHITE);
+		panel_Alarm.setBounds(48, 424, 366, 67);
+		frmAnzeige.getContentPane().add(panel_Alarm);
+		
+		JLabel lbl_erlaubteAbweichung = new JLabel("Erlaubte Abweichung");
+		lbl_erlaubteAbweichung.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
+		lbl_erlaubteAbweichung.setBounds(10, 11, 152, 26);
+		panel_Alarm.add(lbl_erlaubteAbweichung);
+		
+		JLabel lbl_prozentAbweichungen = new JLabel("Prozent Abweichungen");
+		lbl_prozentAbweichungen.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
+		lbl_prozentAbweichungen.setBounds(172, 11, 152, 26);
+		panel_Alarm.add(lbl_prozentAbweichungen);
+		
+		txtBox_erlaubteAbweichung = new JTextField();
+		txtBox_erlaubteAbweichung.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		txtBox_erlaubteAbweichung.setColumns(10);
+		txtBox_erlaubteAbweichung.setBounds(10, 35, 62, 20);
+		panel_Alarm.add(txtBox_erlaubteAbweichung);
+		
+		JLabel lbl_Prozent = new JLabel("%");
+		lbl_Prozent.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		lbl_Prozent.setBounds(82, 32, 20, 26);
+		panel_Alarm.add(lbl_Prozent);
+		
+		JLabel lbl_Prozent2 = new JLabel("%");
+		lbl_Prozent2.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		lbl_Prozent2.setBounds(244, 32, 20, 26);
+		panel_Alarm.add(lbl_Prozent2);
+		
+		txtBox_prozentAbweichungen = new JTextField();
+		txtBox_prozentAbweichungen.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		txtBox_prozentAbweichungen.setColumns(10);
+		txtBox_prozentAbweichungen.setBounds(172, 35, 62, 20);
+		panel_Alarm.add(txtBox_prozentAbweichungen);
+		
+		JLabel lbl_Alarm = new JLabel("Alarme");
+		lbl_Alarm.setFont(new Font("Segoe UI Black", Font.PLAIN, 18));
+		lbl_Alarm.setBounds(48, 387, 98, 26);
+		frmAnzeige.getContentPane().add(lbl_Alarm);
 	}		
 }
-
-    
-

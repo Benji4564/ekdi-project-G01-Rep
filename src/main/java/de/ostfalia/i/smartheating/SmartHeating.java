@@ -21,7 +21,6 @@ class GraphConfig { //anlegen einer Klasse für die folgenden Parameter, damit a
 }
 
 
-
 public class SmartHeating {
     private String RoomName;
     private final Vector<Double> measurements = new Vector<>();
@@ -29,7 +28,8 @@ public class SmartHeating {
     private JComboBox comboBox;
     public static GraphConfig graphConfig = new GraphConfig();
     public static String[] räume = new String[] {"Wohnzimmer", "Küche", "Schlafzimmer", "Badezimmer", "Flur"};
-
+    public static JSONObject jsonObject = null;
+    
     /**
      * initialize the app by reading the data from the file
      */
@@ -42,8 +42,7 @@ public class SmartHeating {
         } catch (Exception e) {
             System.out.println(e);
             System.err.println("Error while reading file");
-        }
-        
+        }        
     }
 
 
@@ -141,42 +140,31 @@ public class SmartHeating {
     }
 
     public static void drawLinePlotByArray(GraphConfig config,  SmartHeating[] rooms ) {
-
         GraphGenerator.showLinePlot( rooms, config.x, config.y, config.headline, config.xArray);
-
     }
-
-    public static JSONObject jsonObject = null;
-
-
-
-
-
+  
     public static SmartHeating[] getYearData(int year, String room){
         SmartHeating response = new SmartHeating();
         
         int[] availableMonths = utils.getAvailableMonths(year, room);
         response.setName(room);
+        SmartHeating responseAbsolute = new SmartHeating();
         Arrays.sort(availableMonths);
         for (int i = 1; i < 13; i++) {
             try {
                 SmartHeating month = getMonthMeasurement(year, i, room, false, TraceColour.BLACK)[0];
                 response.addMeasurement(month.getAverage());
+                SmartHeating monthAbsolute = getMonthMeasurement(year, i, room, true, TraceColour.BLACK)[1];
+                responseAbsolute.addMeasurement(monthAbsolute.getAverage());
             } catch (Exception e) {
                 System.out.println(e);
                 response.addMeasurement(0);
             }
-
         }
 
 
-        return new SmartHeating[]{response};
+        return new SmartHeating[]{response, responseAbsolute};
     }
-
-
-
-
-
 
 
 /**
@@ -205,10 +193,10 @@ public class SmartHeating {
         absoHeating.setName(room);
         absoHeating.setTraceColour(color);
         int[] data = utils.getDayData(year, month, day, room);
+
         for (int i = 0; i < data.length; i++) {
             absoHeating.addMeasurement(data[i]);
         }
-
         
         int previoussum = data[0];
         for(int i = 0; i < data.length; i++){
@@ -232,8 +220,8 @@ public class SmartHeating {
     public static SmartHeating[] getMonthMeasurement(int year, int month, String room, boolean drawAbsolute, TraceColour color) throws FileNotFoundException{
 
         GraphConfig graphConfig = new GraphConfig();
-        graphConfig.x = "Day";
-        graphConfig.y = "Value";
+        graphConfig.x = "Tag";
+        graphConfig.y = "Verbrauch";
         graphConfig.headline = "Smart Heating for " + month + "/" + year;
 
         SmartHeating usage = new SmartHeating();
@@ -250,26 +238,26 @@ public class SmartHeating {
         int previousday = firstDay[0];
         float dayAvg = 0;
         for(int i = 0; i < firstDay.length; i++){
-            dayAvg += firstDay[i] - previousday;
+            dayAvg += previousday;
             previousday = firstDay[i];
         }
         dayAvg /= firstDay.length;
         for (int day = 0; day < data.length; day++){
             int[] dayData = utils.getDayData(year, month, day + 1, room);
-
+            usage.addMeasurement(berechnungVerbrauch(year, month, day + 1, room));
 
             previousday = dayData[0];
             dayAvg = 0;
+            int dayTotal = 0;
             for(int i = 0; i < dayData.length; i++){
-                dayAvg += dayData[i] - previousday;
-                previousday = dayData[i];
+                dayTotal  += dayData[i];
             }
 
-            absoHeating.addMeasurement(dayAvg);
+            absoHeating.addMeasurement(dayTotal);
             dayAvg /= dayData.length;
 
 
-            usage.addMeasurement(dayAvg);
+            //usage.addMeasurement(dayAvg);
  
         }
 
@@ -277,10 +265,10 @@ public class SmartHeating {
         
     }
 
+
     /**
      * initialize the window
      */
-
 
     /**
      * 
@@ -293,6 +281,7 @@ public class SmartHeating {
 
     public static SmartHeating[] getWeekData(int year, int month, int day, String room) {
         float[] data = new float[7];
+        Float[] dataAbFloat = new Float[7];
         if(day > 7){
             for(int i = 0; i < 7; i++){
                 float[] dayData = getDailyUsage(year, month, day - 7 + i, room);
@@ -301,7 +290,8 @@ public class SmartHeating {
                     counter += j;
                 }
 
-                data[i] = counter/dayData.length;
+                data[i] = counter;
+                dataAbFloat[i] = counter * 24;
             }
         }
 
@@ -324,6 +314,7 @@ public class SmartHeating {
                         counter += j;
                     }
                     data[c] = counter/dayData.length;
+                    dataAbFloat[c] = counter;
                     c++;
     
                 }
@@ -339,6 +330,7 @@ public class SmartHeating {
                 }
 
                 data[c] = counter/dayData.length;
+                dataAbFloat[c] = counter;
                 c++;
             }
         }
@@ -352,6 +344,7 @@ public class SmartHeating {
         return new SmartHeating[] {usage};
     }
 
+
     public static float[] getDailyUsage(int year, int month, int day, String room) {
         int[] data = utils.getDayData(year, month, day, room);
         float[] usage = new float[data.length];
@@ -363,13 +356,12 @@ public class SmartHeating {
         return usage;
     }
 
+
     class Average{
         String name = "";
         double percent = 0;
     }
 
-
-    
 
     public static Average[] getDeviation(double threshold, SmartHeating...data){
         double totalAvg = 0;
@@ -396,23 +388,5 @@ public class SmartHeating {
             index++;
         }
         return averages;
-    }
-
-
-    
-
-    public static void main(String[] args) throws FileNotFoundException{
-        init();
-        SmartHeating s = getDayMeasurememt(frame.year, 1, 5, "Schlafzimmer", false, TraceColour.RED)[0];
-        Average[] a = getDeviation(0.3, s);
-        
-        
-        
-        
-        
-        for(Average avg: a){
-            System.out.println(avg.name + ": " + avg.percent + "%");
-        }
-        //this makes the plot available on http://localhost:8090/view/heating
     }
 }
