@@ -4,6 +4,7 @@ package de.ostfalia.i.smartheating;
  * @author javacodepoint.com, modified by Benjamin Vollmers and Ronja Rosenbach
  * @source https://www.javacodegeeks.com/2015/07/apache-poi-tutorial.html
  */
+
 public class Measurement {
     private String Heizkörper;
     private String Zählerstand;
