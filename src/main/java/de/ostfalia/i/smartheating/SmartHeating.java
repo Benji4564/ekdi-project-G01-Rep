@@ -25,7 +25,6 @@ public class SmartHeating {
     private String RoomName;
     private final Vector<Double> measurements = new Vector<>();
     private TraceColour traceColour = TraceColour.BLUE;
-    private JComboBox comboBox;
     public static GraphConfig graphConfig = new GraphConfig();
     public static String[] räume = new String[] {"Wohnzimmer", "Küche", "Schlafzimmer", "Badezimmer", "Flur"};
     public static JSONObject jsonObject = null;
@@ -120,11 +119,7 @@ public class SmartHeating {
         SmartHeating usage = getDayMeasurememt(year, month, day, room, false, TraceColour.PURPLE)[0];
         usage.getMeasurements();
         double totalUsage = 0;
-        int count = 0;
-        for (double m: usage.getMeasurements()) {
-            if(m == 0){
-                count++;
-            }
+        for (double m: usage.getMeasurements()) {            
             totalUsage += m;
         }
         return totalUsage;
@@ -360,33 +355,5 @@ public class SmartHeating {
     class Average{
         String name = "";
         double percent = 0;
-    }
-
-
-    public static Average[] getDeviation(double threshold, SmartHeating...data){
-        double totalAvg = 0;
-        for(SmartHeating s: data){
-            totalAvg += s.getAverage();
-        }
-        totalAvg /= data.length;
-        Average[] averages = new Average[data.length];
-        int index = 0;
-        for(SmartHeating s: data){
-            
-            int counter = 0;
-            int total = 0;
-            for(double m: s.getMeasurements()){
-                total++;
-                if(m >= totalAvg * (1 + threshold)){
-                    counter++;
-                }
-            }
-            Average a = new SmartHeating().new Average();
-            a.name = s.getName();
-            a.percent = ((double)counter/(double)total) * 100;
-            averages[index] = a;
-            index++;
-        }
-        return averages;
     }
 }
