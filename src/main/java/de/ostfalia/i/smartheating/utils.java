@@ -449,7 +449,6 @@ public class utils {
     }
 
     public static void pull(){
-    //write code to connect to database
         String connectionUrl ="jdbc:mysql://db4free.net:3306/school";
         String statement = "SELECT file FROM ekdi";
         try {
@@ -477,7 +476,6 @@ public class utils {
     }
 
     public static void push(){
-        //write code to connect to database
         String connectionUrl ="jdbc:mysql://db4free.net:3306/school";
         String statement = "UPDATE ekdi SET file = ?";
         try {
