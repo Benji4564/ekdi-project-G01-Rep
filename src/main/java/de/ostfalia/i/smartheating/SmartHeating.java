@@ -25,7 +25,6 @@ public class SmartHeating {
     private String RoomName;
     private final Vector<Double> measurements = new Vector<>();
     private TraceColour traceColour = TraceColour.BLUE;
-    private JComboBox comboBox;
     public static GraphConfig graphConfig = new GraphConfig();
     public static String[] räume = new String[] {"Wohnzimmer", "Küche", "Schlafzimmer", "Badezimmer", "Flur"};
     public static JSONObject jsonObject = null;
@@ -121,11 +120,7 @@ public class SmartHeating {
         SmartHeating usage = getDayMeasurememt(year, month, day, room, false, TraceColour.PURPLE)[0];
         usage.getMeasurements();
         double totalUsage = 0;
-        int count = 0;
-        for (double m: usage.getMeasurements()) {
-            if(m == 0){
-                count++;
-            }
+        for (double m: usage.getMeasurements()) {            
             totalUsage += m;
         }
         return totalUsage;

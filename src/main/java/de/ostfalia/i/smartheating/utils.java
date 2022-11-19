@@ -16,7 +16,30 @@ import java.sql.*;
 
 
 public class utils {
-
+    /* Here is the explanation for the code above:
+    1. The method getDayData takes 4 arguments: year, month, day and room name.
+    2. After that it creates a new object named response.
+    3. It creates a new array named data.
+    4. It gets the "data" object from the json file.
+    5. It iterates through the "data" array.
+    6. It gets the "name" object from the "data" array and checks if it's equal to the room name.
+    7. If it's true it gets the "measurements" object from the "data" array.
+    8. It gets the "years" array from the "measurements" object.
+    9. It iterates through the "years" array.
+    10. It gets the "year" object from the "years" array and checks if it's equal to the year.
+    11. If it's true it gets the "month" array from the "years" object.
+    12. It iterates through the "months" array.
+    13. It gets the "month" object from the "months" array and checks if it's equal to the month.
+    14. If it's true it gets the "days" array from the "months" object.
+    15. It iterates through the "days" array.
+    16. It gets the "day" object from the "days" array and checks if it's equal to the day.
+    17. If it's true it gets the "hourlyUsage" object from the "days" array.
+    18. It gets the "hourlyUsage" array from the "hourlyUsage" object.
+    19. It creates a new array named data.
+    20. It iterates through the "hourlyUsage" array.
+    21. It gets the "hourlyUsage" object from the "hourlyUsage" array and casts it to int.
+    22. It returns the data array. 
+    */ 
     /**
      * 
      * @param yearValue the year to find the data for
@@ -187,15 +210,23 @@ public class utils {
         return data;
     }
 
+    
+    /* The code above does the following:
+    1. Creates a new gson object
+    2. Adds a json array to the json object
+    3. Adds a json object to the json array
+    4. Adds a json array to the json object
+    5. Adds a json object to the json array
+    6. Writes the json object to a file 
+    */
 
     private static void writeToFile(JSONObject jsonObject){
 
         try (FileWriter file = new FileWriter("src/main/data.json")) {
-            //We can write any JSONArray or JSONObject instance to the file
             Gson gson = new GsonBuilder()
-            .setPrettyPrinting()
-            .create();
-            file.write(gson.toJson(jsonObject));
+                .setPrettyPrinting()
+                .create();
+                file.write(gson.toJson(jsonObject));
  
         } catch (IOException e) {
             e.printStackTrace();
@@ -452,6 +483,14 @@ public class utils {
         };
     }
 
+
+    /* The code above does the following:
+    1. Connects to the database
+    2. Selects the column "file" from the table "ekdi"
+    3. Gets the content of the column
+    4. Converts the content to a JSON object and stores it in the "jsonObject" variable
+    5. Calls the "writeToFile" method 
+    */
     public static void pull(){
         String connectionUrl ="jdbc:mysql://db4free.net:3306/school";
         String statement = "SELECT file FROM ekdi";
@@ -478,6 +517,10 @@ public class utils {
             System.out.println(e);
         }
     }
+    /* The code above does the following:
+    1. Establishes a connection to the database. 
+    2. Creates a prepared statement (statement) with the query "UPDATE 
+    */
 
     public static void push(){
         String connectionUrl ="jdbc:mysql://db4free.net:3306/school";
