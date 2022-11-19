@@ -17,8 +17,8 @@ import java.io.OutputStream;
 import java.util.List;
 /**
  * 
- * @author javacodepoint.com
- *
+ * @author javacodepoint.com, modified by Benjamin Vollmers and Ronja Rosenbach
+ * @source https://javacodepoint.com/convert-json-to-excel-in-java-using-apache-poi-and-jackson/
  */
 
 public class ExcelFileExporter {

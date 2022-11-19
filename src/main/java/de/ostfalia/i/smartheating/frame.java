@@ -118,7 +118,11 @@ public class frame {
 		
 		erlaubteAbweichung = Double.parseDouble(txtBox_erlaubteAbweichung.getText());
 		prozentAbweichungen = Double.parseDouble(txtBox_prozentAbweichungen.getText());
-
+		/* Here is the explanation for the code above:
+		1. The method getDeviationUp() is a method which calculates the deviation of the values of the objects and returns an array.
+		2. The for loop is used to get the values of the array.
+		3. If the value is higher than the proportion it will be printed in the console and a message box will be shown. 
+		*/
 		Average[] averagesUp = getDeviationUp(erlaubteAbweichung, object);
 		for(Average avg: averagesUp){
 			if(avg.percent>=prozentAbweichungen){
@@ -126,6 +130,15 @@ public class frame {
 				JOptionPane.showMessageDialog(null, "Abweichung in/im " + avg.name + " liegt um " + avg.percent + "% über dem Durchschnittswert.");
 			}										
 		}
+
+
+		/* Here is the explanation for the following code:
+		1. First, I need to get the averages of all the objects. That's what getDeviationDown does.
+		2. I put all the averages in a list of averages.
+		3. I check if the current average is higher than my threshold.
+		4. If it is, I print it out.
+		5. If it is not, I don't do anything. 
+		*/
 		Average[] averagesDown = getDeviationDown(erlaubteAbweichung, object);
 		for(Average avg: averagesDown){
 			if(avg.percent>=prozentAbweichungen){
@@ -135,7 +148,14 @@ public class frame {
 		}
 		TraceColour color = allColors[colorIndex];
 		object.setTraceColour(color);
-
+		/* Here is the explanation for the code above:
+		1. Create a new SmartHeating object
+		2. Get the average value of the SmartHeating object
+		3. Fill the new SmartHeating object with the average value
+		4. Set the color of the average line
+		5. Set the name of the average line
+		6. Put the new SmartHeating object to the allAverages array 
+		*/
 		if(showAvg){
 			
 			SmartHeating object_avg = new SmartHeating();
@@ -153,7 +173,21 @@ public class frame {
 		return object;
 	}
 
-
+	/* Here is the explanation for the following code:
+	1. First, I calculate the total average of all the data using a for loop.
+	2. Then, I create an array of Average objects, which is a class that I created in order to store the name and percentage of the deviations.
+	3. Next, I create a for loop that goes through each SmartHeating object in the data array.
+	4. Then, I create a counter that will keep track of how many measurements are above the threshold.
+	5. Next, I create a variable that will keep track of the total number of measurements.
+	6. Then, I create a for loop that goes through each measurement in the SmartHeating object.
+	7. Next, I increase the total variable by 1.
+	8. Then, I check if the measurement is above the threshold. If it is, I increase the counter by 1.
+	9. After that, I create an Average object.
+	10. Then, I set the name of the Average object to the name of the SmartHeating object.
+	11. Next, I calculate the percentage of measurements that are above the threshold. I round the percentage to 2 decimal places.
+	12. After that, I add the Average object to the averages array.
+	13. Finally, I return the averages array. 
+	*/
 
     public static Average[] getDeviationUp(double threshold, SmartHeating...data){
         double totalAvg = 0;
@@ -184,7 +218,24 @@ public class frame {
         return averages;
     }
 
-
+	/* Here is the explanation for the following code:
+	1. The function is called getDeviationDown and takes a double threshold and a SmartHeating vararg. The vararg is an array of SmartHeating objects, and the function should therefore return an array of Average objects.
+	2. The first line is just a simple for loop that adds all the averages of the SmartHeating objects to a variable called totalAvg.
+	3. The next line divides the totalAvg by the length of the SmartHeating vararg, which is the number of SmartHeating objects in the vararg, and assigns it to the variable totalAvg.
+	4. The next line creates an array of Average objects, and the length of the array is the same as the number of SmartHeating objects in the vararg.
+	5. The next line creates an integer variable called index, and assigns it the value 0.
+	6. The next line is a for loop that goes through all the SmartHeating objects in the vararg.
+	7. The next line creates an integer variable called counter, and assigns it the value 0.
+	8. The next line creates an integer variable called total, and assigns it the value 0.
+	9. The next line is a for loop that goes through all the measurements in the current SmartHeating object in the vararg.
+	10. The next line increments the total variable with 1.
+	11. The next line checks if the current measurement is less than or equal to the totalAvg multiplied by 1 +- threshold, and if it is, it increments the counter variable with 1.
+	12. The next line creates an Average object called a.
+	13. The next line assigns the name of the current SmartHeating object to the name variable in the Average object.
+	14. The next line assigns the percentage of measurements that were less than or equal to the totalAvg multiplied by 1 +- threshold to the percent variable in the Average object. The percentage is calculated by dividing the counter variable by the total variable, then multiplying the result by 100, and then rounding the result to 2 decimal places.
+	15. The next line assigns the Average object a to the index'th position in the array of Average objects.
+	16. The next line increments the index variable with 1.
+	17. The next line returns the array of Average objects. */
 	public static Average[] getDeviationDown(double threshold, SmartHeating...data){
         double totalAvg = 0;
         for(SmartHeating s: data){
@@ -232,6 +283,29 @@ public class frame {
 		});
 	}
 
+
+	/* Here is the explanation for the following code:
+	1. I have a mainframe window, which contains 3 other windows. One is for the main menu, another one for the heating values and another one for the display. The main menu is the first window that should appear, so I set the visibility of the main menu window to true and the visibility of the other windows to false. This is done by the following lines of code:
+
+	window.frmSmartheater.setVisible(true);
+	window.frmHeizwerte.setVisible(false);
+	window.frmAnzeige.setVisible(false);
+
+	2. I have a button in the main menu window, which should open the heating values window. So I added an actionListener to the button, which starts a new thread. I want to do this in a new thread, because I want to have the main menu window still visible while the heating values window is opened. I think this is not possible with a normal actionListener. So I added the following code to the actionListener:
+
+	new Thread(new Runnable() {
+		public void run() {
+			try {
+				frame window = new frame();
+				window.frmSmartheater.setVisible(false);
+				window.frmHeizwerte.setVisible(true);
+				window.frmAnzeige.setVisible(false);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}).start();
+	*/
 
 	public static void update(){
         SmartHeating.räume = utils.getAvailableRooms();
