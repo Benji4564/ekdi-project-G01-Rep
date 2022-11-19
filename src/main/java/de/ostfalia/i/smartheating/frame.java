@@ -171,6 +171,7 @@ public class frame {
             index++;
         }
         return averages;
+		
     }
 
 
