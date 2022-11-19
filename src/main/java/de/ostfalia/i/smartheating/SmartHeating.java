@@ -29,6 +29,7 @@ public class SmartHeating {
     public static GraphConfig graphConfig = new GraphConfig();
     public static String[] räume = new String[] {"Wohnzimmer", "Küche", "Schlafzimmer", "Badezimmer", "Flur"};
     public static JSONObject jsonObject = null;
+    public static double temperature = 0;
     
     /**
      * initialize the app by reading the data from the file
@@ -155,12 +156,15 @@ public class SmartHeating {
                 SmartHeating month = getMonthMeasurement(year, i, room, false, TraceColour.BLACK)[0];
                 response.addMeasurement(month.getAverage());
                 SmartHeating monthAbsolute = getMonthMeasurement(year, i, room, true, TraceColour.BLACK)[1];
+                System.out.println(monthAbsolute.getAverage());
                 responseAbsolute.addMeasurement(monthAbsolute.getAverage());
             } catch (Exception e) {
                 System.out.println(e);
                 response.addMeasurement(0);
             }
         }
+
+        
 
 
         return new SmartHeating[]{response, responseAbsolute};
@@ -253,12 +257,11 @@ public class SmartHeating {
                 dayTotal  += dayData[i];
             }
 
-            absoHeating.addMeasurement(dayTotal);
+            absoHeating.addMeasurement(utils.getDayData(year, month, day +1, room)[utils.getDayData(year, month, day + 1, room).length - 1]);
             dayAvg /= dayData.length;
 
 
             //usage.addMeasurement(dayAvg);
- 
         }
 
         return new SmartHeating[] {usage, absoHeating};
@@ -282,6 +285,7 @@ public class SmartHeating {
     public static SmartHeating[] getWeekData(int year, int month, int day, String room) {
         float[] data = new float[7];
         Float[] dataAbFloat = new Float[7];
+        SmartHeating absolute = new SmartHeating();
         if(day > 7){
             for(int i = 0; i < 7; i++){
                 float[] dayData = getDailyUsage(year, month, day - 7 + i, room);
@@ -293,10 +297,23 @@ public class SmartHeating {
                 data[i] = counter;
                 dataAbFloat[i] = counter * 24;
             }
+
+            for (int i = 0; i < data.length; i++) {
+                int[] dataForAbsolute = utils.getDayData(year, month, day - 7 + i, room);
+                int daySum = 0;
+                for (int j: dataForAbsolute) {
+                    System.out.println(j);
+                    daySum += j;
+                }
+                    
+
+                absolute.addMeasurement(utils.getDayData(year, month, day - 7 + i, room)[utils.getDayData(year, month, day - 7 + i, room).length - 1]);
+            }
         }
 
         if(day <= 7){
             int c = 0;
+            
             try {
                 int[] availableDaysPrevoiusMonth = null;
                 try {
@@ -318,6 +335,15 @@ public class SmartHeating {
                     c++;
     
                 }
+
+                for (int i =  availableDaysPrevoiusMonth.length - 7 + day; i < availableDaysPrevoiusMonth.length; i++) {
+                    int[] dayData = utils.getDayData(year, month - 1, availableDaysPrevoiusMonth[availableDaysPrevoiusMonth.length - (i-day)], room);
+                    int daySum = 0;
+                    for (int j: dayData) {
+                        daySum += j;
+                    }
+                    absolute.addMeasurement(daySum);
+                }
             } catch (Exception e) {
                 c = 7 - day;
             }
@@ -333,6 +359,15 @@ public class SmartHeating {
                 dataAbFloat[c] = counter;
                 c++;
             }
+
+            for (int i = 0; i < day; i++) {
+                int[] dayData = utils.getDayData(year, month, day-i, room);
+                int daySum = 0;
+                for (int j: dayData) {
+                    daySum += j;
+                }
+                absolute.addMeasurement(daySum);
+            }
         }
 
         SmartHeating usage = new SmartHeating();
@@ -341,7 +376,7 @@ public class SmartHeating {
             usage.addMeasurement(f);
         }
 
-        return new SmartHeating[] {usage};
+        return new SmartHeating[] {usage, absolute};
     }
 
 
@@ -388,5 +423,9 @@ public class SmartHeating {
             index++;
         }
         return averages;
+    }
+
+    public static void main(String[] args) {
+        utils.getTemperature();
     }
 }

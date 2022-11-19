@@ -8,6 +8,10 @@ import com.google.gson.GsonBuilder;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.sql.*;
 
 
@@ -233,7 +237,7 @@ public class utils {
                                         response = dayObject.get("hourlyUsage");
                                         JSONArray hourly = (JSONArray) response;
                                         if (hour >= 0){
-                                            hourly.set((int)hour, (long)value);
+                                            hourly.set((int)hour -1, (long)value);
                                             SmartHeating.jsonObject = jsonObject;
                                             writeToFile(jsonObject);
                                             return true;
@@ -486,6 +490,36 @@ public class utils {
         } catch (Exception e) {
 
         }
+    }
+    /* The code above does the following:
+    1. It creates an HttpClient object.
+    2. It creates a HttpRequest object.
+    3. It sends the request and gets a response.
+    4. It prints the response.
+    5. It parses the JSON response and gets the temperature value.
+    6. It assigns the temperature value to the temperature field of the SmartHeating class. 
+    */
+    public static void getTemperature(){
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create("http://thermostat1/status"))
+            .build();
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+        {
+            try {
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                System.out.println(response.body());
+                Object r = new JSONParser().parse(response.body());
+                JSONObject jsonObject = (JSONObject) r;
+                JSONArray thermostats = (JSONArray) jsonObject.get("thermostats");
+                JSONObject thermostat = (JSONObject) thermostats.get(0);
+                JSONObject tmp = (JSONObject) thermostat.get("tmp");
+                SmartHeating.temperature = (double) tmp.get("value");
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+
     }
 
 }
