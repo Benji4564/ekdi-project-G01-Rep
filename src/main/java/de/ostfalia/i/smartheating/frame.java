@@ -110,6 +110,7 @@ public class frame {
 			for(double u: object.getMeasurements()){				
 				preisWerte.addMeasurement(u * Float.parseFloat(textField_2.getText()));
 				System.out.println(u * Float.parseFloat(textField_2.getText()));
+				preisWerte.setName(i);
 			}
 			
 			object = preisWerte;
@@ -1089,7 +1090,7 @@ public class frame {
                                 for(String i: allRooms){
 									System.out.println("Room: " + i);	
 									SmartHeating object = new SmartHeating();
-									if(wasAnzeige == 0){																
+									if(wasAnzeige == 0 || wasAnzeige == 1){																
                                     	
 										object = SmartHeating.getDayMeasurememt(year, month, day, i, false, TraceColour.PURPLE)[0];
 									} else if (wasAnzeige == 2){
@@ -1141,7 +1142,7 @@ public class frame {
 								int colorIndex = 0;
                                 for(String i: allRooms){
 									SmartHeating object = new SmartHeating();
-									if(wasAnzeige == 0){
+									if(wasAnzeige == 0 || wasAnzeige == 1){
                                     	object = SmartHeating.getWeekData(year, month, day, i)[0];
 									} else if (wasAnzeige == 2){
 										object = SmartHeating.getWeekData(year, month, day, i)[1];
@@ -1184,7 +1185,7 @@ public class frame {
 								int colorIndex = 0;
                                 for(String i: allRooms){
 									SmartHeating object = new SmartHeating();
-									if(wasAnzeige == 0){
+									if(wasAnzeige == 0 || wasAnzeige == 1){
 										object = SmartHeating.getMonthMeasurement(year, month,  i, false, TraceColour.ORANGE)[0];
 									} else if (wasAnzeige == 2){
 										object = SmartHeating.getMonthMeasurement(year, month,  i, false, TraceColour.ORANGE)[1];
@@ -1230,7 +1231,7 @@ public class frame {
 								int colorIndex = 0;
                                 for(String i: allRooms){
 									SmartHeating object = new SmartHeating();
-									if(wasAnzeige == 0){
+									if(wasAnzeige == 0 || wasAnzeige == 1){
 										object = SmartHeating.getYearData(year,  i)[0];;
 									} else if (wasAnzeige == 2){
 										object = SmartHeating.getYearData(year,  i)[1];;

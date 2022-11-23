@@ -420,7 +420,4 @@ public class SmartHeating {
         return averages;
     }
 
-    public static void main(String[] args) {
-        utils.getTemperature();
-    }
 }
