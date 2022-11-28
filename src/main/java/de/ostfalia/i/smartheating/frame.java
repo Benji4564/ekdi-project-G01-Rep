@@ -52,7 +52,12 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.UIManager;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.MouseInputListener;
+
+import org.apache.poi.ss.formula.functions.Mode;
 import org.charts.dataviewer.utils.TraceColour;
+
+import com.mysql.cj.result.BufferedRowList;
+
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.ListSelectionModel;
@@ -67,13 +72,13 @@ public class frame {
 	private JFrame frmSmartheater;
 	private JFrame frmAnzeige;
 	private JFrame frmHeizwerte;
-	private JTable table;
+	private static JTable table;
 	private JTextField txtBox_Tag;
 	private JTextField txtBox_Monat;
 	private JTextField txtBox_Jahr;
 	private JTextField txtBox_Stunde;
 	private JTextField txtBox_Heizwert;
-	DefaultTableModel model;
+	static DefaultTableModel model;
 	public static JTextField textField_2;
     public static JComboBox comboBox_Was;
     private JTextField txtBox_StartTag;
@@ -100,6 +105,98 @@ public class frame {
 	public static JTextField txtBox_erlaubteAbweichung;
 	public static JLabel lbl_TempAnzeige = new JLabel("");
 	public static JTextField txtBox_prozentAbweichungen;
+	public static List<JLabel> labels = new ArrayList<JLabel>();
+	public static List<JButton> buttons = new ArrayList<JButton>();
+	public static List<JPanel> panelLight = new ArrayList<JPanel>();
+	public static List<JFrame> frames = new ArrayList<JFrame>();
+	public static List<JComboBox> comboBoxes = new ArrayList<JComboBox>();
+	public static List<JTextField> textFields = new ArrayList<JTextField>();
+	public static List<JList> lists = new ArrayList<JList>();
+	public static List<JCheckBox> checkBoxes = new ArrayList<JCheckBox>();
+ 
+	public static void darkmode() {
+		for(JLabel label : labels) {
+			label.setForeground(Color.WHITE);
+		}
+
+		for(JButton button : buttons) {
+			button.setForeground(Color.WHITE);
+			button.setBackground(Color.DARK_GRAY);
+		}
+
+		for(JPanel panel : panelLight) {
+			panel.setBackground(Color.GRAY);
+		}
+
+		for(JFrame frame : frames) {
+			frame.getContentPane().setBackground(Color.DARK_GRAY);
+		}
+
+		for(JComboBox comboBox : comboBoxes) {
+			comboBox.setBackground(Color.DARK_GRAY);
+			comboBox.setForeground(Color.WHITE);
+		}
+
+		for(JTextField textField : textFields) {
+			textField.setBackground(Color.DARK_GRAY);
+			textField.setForeground(Color.WHITE);
+		}
+
+		for(JList list : lists) {
+			list.setBackground(Color.DARK_GRAY);
+			list.setForeground(Color.WHITE);
+		}
+
+		for(JCheckBox checkBox : checkBoxes) {
+			checkBox.setBackground(Color.GRAY);
+			checkBox.setForeground(Color.WHITE);
+		}
+
+		table.setBackground(Color.DARK_GRAY);
+		table.setForeground(Color.WHITE);
+	}
+
+	public static void lightMode(){
+		for(JLabel label : labels) {
+			label.setForeground(Color.BLACK);
+		}
+
+		for(JButton button : buttons) {
+			button.setForeground(Color.BLACK);
+			button.setBackground(Color.WHITE);
+		}
+
+		for(JPanel panel : panelLight) {
+			panel.setBackground(new Color(248, 248, 245));
+		}
+
+		for(JFrame frame : frames) {
+			frame.getContentPane().setBackground(new Color(237, 237, 233));
+		}
+
+		for(JComboBox comboBox : comboBoxes) {
+			comboBox.setBackground(Color.WHITE);
+			comboBox.setForeground(Color.BLACK);
+		}
+
+		for(JTextField textField : textFields) {
+			textField.setBackground(Color.WHITE);
+			textField.setForeground(Color.BLACK);
+		}
+
+		for(JList list : lists) {
+			list.setBackground(Color.WHITE);
+			list.setForeground(Color.BLACK);
+		}
+
+		for(JCheckBox checkBox : checkBoxes) {
+			checkBox.setBackground(Color.WHITE);
+			checkBox.setForeground(Color.BLACK);
+		}
+
+		table.setBackground(Color.WHITE);
+		table.setForeground(Color.BLACK);
+	}
 
 
 	public static SmartHeating erstellungGraphen(TraceColour[] allColors, int colorIndex, int index, SmartHeating object, String i){
@@ -280,6 +377,8 @@ public class frame {
 					window.frmSmartheater.setVisible(true);
 					window.frmHeizwerte.setVisible(false);
 					window.frmAnzeige.setVisible(false);
+					darkmode();
+					lightMode();
 					
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -391,6 +490,7 @@ public class frame {
 	void initialize() {
 		// Fenster für die Startseite
 		frmSmartheater = new JFrame();
+		frames.add(frmSmartheater);
 		frmSmartheater.getContentPane().setBackground(new Color(237, 237, 233));
 		frmSmartheater.getContentPane().setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		frmSmartheater.setTitle("SmartHeater");
@@ -402,6 +502,7 @@ public class frame {
 										
 		// Überschrift
 		JLabel lblHeadline = new JLabel("SMART HEATER");
+		labels.add(lblHeadline);
 		lblHeadline.setHorizontalAlignment(SwingConstants.CENTER);
 		lblHeadline.setFont(new Font("Segoe UI Black", Font.PLAIN, 50));
 		lblHeadline.setBounds(267, 105, 459, 89);
@@ -409,6 +510,9 @@ public class frame {
 
 		//Label
 		JPanel panel_Home = new JPanel();
+		panelLight.add(panel_Home);
+		
+
 		panel_Home.setBackground(new Color(248, 248, 245));
 		panel_Home.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel_Home.setBounds(267, 232, 459, 210);
@@ -417,6 +521,7 @@ public class frame {
 
 		// Button Heizkörperwerte hinzufügen
 		JButton btnHeizwerte = new JButton("Heizkörperwerte");
+		buttons.add(btnHeizwerte);
 		btnHeizwerte.setBounds(124, 55, 215, 39);
 		panel_Home.add(btnHeizwerte);
 		btnHeizwerte.setFocusPainted(false);
@@ -436,6 +541,7 @@ public class frame {
 		
 		// Button Heizkörperwerte Ansicht
 		JButton btnAnzeige = new JButton("Ansicht");
+		buttons.add(btnAnzeige);
 		btnAnzeige.setBounds(124, 120, 215, 39);		
 		btnAnzeige.setFocusPainted(false);		
 		btnAnzeige.setForeground(new Color(82, 121, 111));		
@@ -453,6 +559,7 @@ public class frame {
 		panel_Home.add(btnAnzeige);
 		
 		JButton btn_pushHome = new JButton("push data");
+		buttons.add(btn_pushHome);
 		btn_pushHome.setForeground(new Color(53, 79, 82));
 		btn_pushHome.setFocusPainted(false);
 		btn_pushHome.setBackground(new Color(224, 228, 222));
@@ -467,6 +574,8 @@ public class frame {
 		frmSmartheater.getContentPane().add(btn_pushHome);
 		
 		JButton btn_pullHome = new JButton("pull data");
+
+		buttons.add(btn_pullHome);
 		btn_pullHome.setForeground(new Color(47, 62, 70));
 		btn_pullHome.setBackground(new Color(202, 210, 197));
 		btn_pullHome.setFocusPainted(false);
@@ -481,6 +590,7 @@ public class frame {
 		frmSmartheater.getContentPane().add(btn_pullHome);
 
 		JLabel lblIconHinweis = new JLabel("");
+		labels.add(lblIconHinweis);
 		lblIconHinweis.setIcon(new ImageIcon("icons/icons8-benutzerhandbuch-50.png"));
 		lblIconHinweis.setBounds(10, 11, 50, 50);
 		lblIconHinweis.addMouseListener(new MouseAdapter() {
@@ -497,6 +607,7 @@ public class frame {
 		
 		// Fenster für das Hinzufügen der Heizkörperwerte
 		frmHeizwerte = new JFrame();
+		frames.add(frmHeizwerte);
 		frmHeizwerte.getContentPane().setBackground(new Color(237, 237, 233));
 		frmHeizwerte.getContentPane().setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		frmHeizwerte.setTitle("Übersicht Heizkörperwerte");
@@ -528,7 +639,9 @@ public class frame {
 			}
 		});
 		table.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-		model = new DefaultTableModel();		
+		
+		model = new DefaultTableModel();
+			
 		Object[] column = {"Raum", "Zählerstand", "Tag", "Monat", "Jahr", "Stunde"};
 		final Object[] row = new Object[6];
 		model.setColumnIdentifiers(column);
@@ -537,18 +650,21 @@ public class frame {
 		
 
 		JLabel lblbersicht = new JLabel("Übersicht");
+		labels.add(lblbersicht);
 		lblbersicht.setFont(new Font("Segoe UI Black", Font.PLAIN, 18));
 		lblbersicht.setBounds(511, 122, 96, 22);
 		frmHeizwerte.getContentPane().add(lblbersicht);
 		
 
 		JLabel lblHeizkoerperwertHinzufuegen = new JLabel("Heizkörperwert hinzufügen");
+		labels.add(lblHeizkoerperwertHinzufuegen);
 		lblHeizkoerperwertHinzufuegen.setFont(new Font("Segoe UI Black", Font.PLAIN, 18));
 		lblHeizkoerperwertHinzufuegen.setBounds(48, 122, 265, 22);
 		frmHeizwerte.getContentPane().add(lblHeizkoerperwertHinzufuegen);
 		
 
 		JButton btnAnsicht = new JButton("Ansicht");
+		buttons.add(btnAnsicht);
 		btnAnsicht.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		btnAnsicht.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		btnAnsicht.setForeground(new Color(0, 0, 0));
@@ -568,6 +684,7 @@ public class frame {
 		
 
 		JButton btnHome = new JButton("Hauptmenü");
+		buttons.add(btnHome);
 		btnHome.setIcon(new ImageIcon("icons/icons8-startseite-24.png"));
 		btnHome.setFocusPainted(false);
 		btnHome.setFont(new Font("Segoe UI", Font.BOLD, 11));
@@ -588,6 +705,8 @@ public class frame {
 		
 
 		JPanel panel = new JPanel();
+		panelLight.add(panel);
+
 		panel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel.setBackground(new Color(245, 245, 243));
 		panel.setBounds(48, 162, 366, 341);
@@ -596,24 +715,28 @@ public class frame {
 		
 
 		JLabel lblRaumauswahl = new JLabel("Raumauswahl");
+		labels.add(lblRaumauswahl);
 		lblRaumauswahl.setBounds(10, 11, 88, 22);
 		panel.add(lblRaumauswahl);
 		lblRaumauswahl.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 14));
 		
 
 		JLabel lblZeitpunkt = new JLabel("Zeitpunkt");
+		labels.add(lblZeitpunkt);
 		lblZeitpunkt.setBounds(10, 156, 113, 22);
 		panel.add(lblZeitpunkt);
 		lblZeitpunkt.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 14));
 		
 
 		JLabel lblDatum = new JLabel("Datum");
+		labels.add(lblDatum);
 		lblDatum.setBounds(10, 180, 113, 22);
 		panel.add(lblDatum);
 		lblDatum.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		
 
 		txtBox_Tag = new JTextField();
+		textFields.add(txtBox_Tag);
 		txtBox_Tag.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		txtBox_Tag.setBounds(10, 200, 40, 20);
 		panel.add(txtBox_Tag);
@@ -623,6 +746,7 @@ public class frame {
 		
 
 		JLabel lblPunkt = new JLabel(".");
+		labels.add(lblPunkt);
 		lblPunkt.setBounds(47, 200, 13, 22);
 		panel.add(lblPunkt);
 		lblPunkt.setHorizontalAlignment(SwingConstants.CENTER);
@@ -630,6 +754,7 @@ public class frame {
 		
 
 		txtBox_Monat = new JTextField();
+		textFields.add(txtBox_Monat);
 		txtBox_Monat.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		txtBox_Monat.setBounds(58, 200, 40, 20);
 		panel.add(txtBox_Monat);
@@ -639,6 +764,7 @@ public class frame {
 		
 
 		JLabel lblPunkt_1 = new JLabel(".");
+		labels.add(lblPunkt_1);
 		lblPunkt_1.setBounds(96, 200, 13, 22);
 		panel.add(lblPunkt_1);
 		lblPunkt_1.setHorizontalAlignment(SwingConstants.CENTER);
@@ -646,6 +772,7 @@ public class frame {
 		
 
 		txtBox_Jahr = new JTextField();
+		textFields.add(txtBox_Jahr);
 		txtBox_Jahr.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		txtBox_Jahr.setBounds(110, 200, 63, 20);
 		panel.add(txtBox_Jahr);
@@ -655,12 +782,14 @@ public class frame {
 		
 
 		JLabel lblUhrzeit = new JLabel("Uhrzeit");
+		labels.add(lblUhrzeit);
 		lblUhrzeit.setBounds(10, 230, 113, 22);
 		panel.add(lblUhrzeit);
 		lblUhrzeit.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		
 
 		txtBox_Stunde = new JTextField();
+		textFields.add(txtBox_Stunde);
 		txtBox_Stunde.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		txtBox_Stunde.setBounds(10, 254, 40, 20);
 		panel.add(txtBox_Stunde);
@@ -670,18 +799,21 @@ public class frame {
 		
 
 		JLabel lblHeizkörperwert = new JLabel("Zählerstand");
+		labels.add(lblHeizkörperwert);
 		lblHeizkörperwert.setBounds(10, 285, 113, 22);
 		panel.add(lblHeizkörperwert);
 		lblHeizkörperwert.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 14));
 		
 		
 		JLabel lblHeizkörperwertEinheit = new JLabel("kWh");
+		labels.add(lblHeizkörperwertEinheit);
 		lblHeizkörperwertEinheit.setBounds(110, 308, 31, 22);
 		panel.add(lblHeizkörperwertEinheit);
 		lblHeizkörperwertEinheit.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 14));
 		
 
 		txtBox_Heizwert = new JTextField();
+		textFields.add(txtBox_Heizwert);
 		txtBox_Heizwert.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		txtBox_Heizwert.setFont(new Font("Segoe UI Black", Font.PLAIN, 12));
 		txtBox_Heizwert.setColumns(10);
@@ -691,12 +823,14 @@ public class frame {
 
 
 		JLabel lblRoomAdd = new JLabel("Raum hinzufügen");
+		labels.add(lblRoomAdd);
 		lblRoomAdd.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		lblRoomAdd.setBounds(10, 126, 99, 22);
 		panel.add(lblRoomAdd);
 		
 
 		txtBox_AddRoom = new JTextField();
+		textFields.add(txtBox_AddRoom);
 		txtBox_AddRoom.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		txtBox_AddRoom.setFont(new Font("Segoe UI Black", Font.PLAIN, 12));
 		txtBox_AddRoom.setColumns(10);
@@ -705,6 +839,7 @@ public class frame {
 		
 
 		JButton btnAddRoom = new JButton("+");
+		buttons.add(btnAddRoom);
 		btnAddRoom.setFocusPainted(false);
 		btnAddRoom.setBackground(new Color(255, 255, 255));
 		btnAddRoom.addActionListener(new ActionListener() {
@@ -723,6 +858,7 @@ public class frame {
 
 
 		list_Raum = new JList();
+		lists.add(list_Raum);
 		list_Raum.setFont(new Font("Segoe UI Black", Font.PLAIN, 12));
 		list_Raum.addMouseListener(new MouseInputAdapter() {
 			@Override
@@ -774,6 +910,7 @@ public class frame {
 				
 		
 		JButton btnDelete = new JButton("Löschen");
+		buttons.add(btnDelete);
 		btnDelete.setFocusPainted(false);
 		btnDelete.setBackground(new Color(202, 210, 197));
 		btnDelete.setFont(new Font("Segoe UI", Font.PLAIN, 11));
@@ -795,6 +932,7 @@ public class frame {
 		
 		
 		JButton btnExport = new JButton("Exportieren");
+		buttons.add(btnExport);
 		btnExport.setFocusPainted(false);
 		btnExport.setBackground(new Color(255, 255, 255));
 		btnExport.setForeground(new Color(47, 62, 70));
@@ -825,6 +963,7 @@ public class frame {
 		
 
 		JButton btnAdd = new JButton("Hinzufügen");
+		buttons.add(btnAdd);
 		btnAdd.setFont(new Font("Segoe UI", Font.BOLD, 11));
 		btnAdd.setFocusPainted(false);
 		btnAdd.setForeground(new Color(255, 255, 255));
@@ -879,6 +1018,7 @@ public class frame {
 
 
 		JButton btnClear = new JButton("Leeren");
+		buttons.add(btnClear);
 		btnClear.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		btnClear.setBackground(new Color(202, 210, 197));
 		btnClear.setForeground(new Color(0, 0, 0));
@@ -898,6 +1038,7 @@ public class frame {
 
 
 		JButton btn_pushUebersicht = new JButton("push data");
+		buttons.add(btn_pushUebersicht);
 		btn_pushUebersicht.setBackground(new Color(255, 255, 255));
 		btn_pushUebersicht.setFocusPainted(false);
 		btn_pushUebersicht.setForeground(new Color(82, 121, 111));
@@ -912,6 +1053,7 @@ public class frame {
 		frmHeizwerte.getContentPane().add(btn_pushUebersicht);
 		
 		JButton btn_pullUebersicht = new JButton("pull data");
+		buttons.add(btn_pullUebersicht);
 		btn_pullUebersicht.setBackground(new Color(255, 255, 255));
 		btn_pullUebersicht.setFocusPainted(false);
 		btn_pullUebersicht.setForeground(new Color(47, 62, 70));
@@ -933,6 +1075,7 @@ public class frame {
 		panel_Temperatur.setLayout(null);
 		
 		JLabel lblTempHead = new JLabel("Aktuelle Temperatur");
+		labels.add(lblTempHead);
 		lblTempHead.setForeground(new Color(255, 255, 255));
 		lblTempHead.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTempHead.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -954,6 +1097,7 @@ public class frame {
 
 		// Fenster für die Auswahl der Filter für die Anzeige
 		frmAnzeige = new JFrame();
+		frames.add(frmAnzeige);
 		frmAnzeige.getContentPane().setBackground(new Color(237, 237, 233));
 		frmAnzeige.getContentPane().setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		frmAnzeige.setTitle("Anzeigeeinstellungen");
@@ -965,6 +1109,7 @@ public class frame {
 		
 
 		JButton btnHome2 = new JButton("Hauptmenü");
+		buttons.add(btnHome2);
 		btnHome2.setIcon(new ImageIcon("icons/icons8-startseite-24.png"));
 		btnHome2.setFont(new Font("Segoe UI", Font.BOLD, 12));
 		btnHome2.setBackground(new Color(255, 255, 255));
@@ -980,6 +1125,7 @@ public class frame {
 		
 
 		JButton btnUebersicht = new JButton("Übersicht");
+		buttons.add(btnUebersicht);
 		btnUebersicht.setBackground(new Color(255, 255, 255));
 		btnUebersicht.setFocusPainted(false);
 		btnUebersicht.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
@@ -995,6 +1141,7 @@ public class frame {
 		
 
 		JPanel panel2 = new JPanel();
+		panelLight.add(panel2);
 		panel2.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel2.setBounds(48, 155, 366, 208);
 		panel2.setBackground(new Color(245, 245, 243));
@@ -1003,24 +1150,28 @@ public class frame {
 		
 
 		JLabel lblRooms = new JLabel("Räume");
+		labels.add(lblRooms);
 		lblRooms.setFont(new Font("Segoe UI", Font.BOLD, 12));
 		lblRooms.setBounds(10, 11, 61, 26);
 		panel2.add(lblRooms);
 		
 
 		JLabel lblTime = new JLabel("Zeitraum");
+		labels.add(lblTime);
 		lblTime.setFont(new Font("Segoe UI", Font.BOLD, 12));
 		lblTime.setBounds(10, 120, 61, 26);
 		panel2.add(lblTime);
 		
 
         JLabel lblBis = new JLabel("bis");
+		labels.add(lblBis);
 		lblBis.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		lblBis.setBounds(10, 144, 20, 26);
 		panel2.add(lblBis);
 		
 
 		txtBox_StartTag = new JTextField();
+		textFields.add(txtBox_StartTag);
 		txtBox_StartTag.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		txtBox_StartTag.setFont(new Font("Segoe UI", Font.BOLD, 11));
 		txtBox_StartTag.setBounds(40, 148, 37, 20);
@@ -1030,6 +1181,7 @@ public class frame {
         
 
 		txtBox_StartMonat = new JTextField();
+		textFields.add(txtBox_StartMonat);
 		txtBox_StartMonat.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		txtBox_StartMonat.setFont(new Font("Segoe UI", Font.BOLD, 11));
 		txtBox_StartMonat.setColumns(10);
@@ -1039,6 +1191,7 @@ public class frame {
 		
 
 		txtBox_StartJahr = new JTextField();
+		textFields.add(txtBox_StartJahr);
 		txtBox_StartJahr.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		txtBox_StartJahr.setFont(new Font("Segoe UI", Font.BOLD, 11));
 		txtBox_StartJahr.setColumns(10);
@@ -1053,18 +1206,21 @@ public class frame {
 		
 
 		JLabel lblVon_Punkt = new JLabel(".");
+		labels.add(lblVon_Punkt);
 		lblVon_Punkt.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		lblVon_Punkt.setBounds(81, 144, 20, 26);
 		panel2.add(lblVon_Punkt);
 		
 
 		JLabel lblVon_Punkt_1 = new JLabel(".");
+		labels.add(lblVon_Punkt_1);
 		lblVon_Punkt_1.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		lblVon_Punkt_1.setBounds(127, 144, 20, 26);
 		panel2.add(lblVon_Punkt_1);
 		
 
 		JButton btnShow = new JButton("Anzeigen");
+		buttons.add(btnShow);
 		btnShow.setForeground(new Color(47, 62, 70));
 		btnShow.setFocusPainted(false);
 		btnShow.setBackground(new Color(224, 228, 222));
@@ -1282,6 +1438,7 @@ public class frame {
 		frmAnzeige.getContentPane().add(btnShow);
 		
 		JLabel lblFilter = new JLabel("Filter");
+		labels.add(lblFilter);	
 		lblFilter.setFont(new Font("Segoe UI Black", Font.PLAIN, 18));
 		lblFilter.setBounds(108, 118, 61, 26);
 		frmAnzeige.getContentPane().add(lblFilter);
@@ -1292,6 +1449,7 @@ public class frame {
 		panel2.add(scrollPane_Room);
 
 		list_Room = new JList();
+		lists.add(list_Room);
 		
 		list_Room.setModel(new AbstractListModel() {
 			String[] values = SmartHeating.räume;
@@ -1319,6 +1477,8 @@ public class frame {
             }
         });
 		JPanel panel_1 = new JPanel();
+		panelLight.add(panel_1);
+
 		panel_1.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel_1.setLayout(null);
 		panel_1.setBounds(597, 155, 366, 208);
@@ -1327,18 +1487,21 @@ public class frame {
 		
 
 		JLabel lblAbstnde = new JLabel("Abstände");
+		labels.add(lblAbstnde);
 		lblAbstnde.setFont(new Font("Segoe UI", Font.BOLD, 12));
 		lblAbstnde.setBounds(10, 11, 61, 26);
 		panel_1.add(lblAbstnde);
 		
 
 		JLabel lblWasSollAngezeigt = new JLabel("Was soll angezeigt werden?");
+		labels.add(lblWasSollAngezeigt);
 		lblWasSollAngezeigt.setFont(new Font("Segoe UI", Font.BOLD, 12));
 		lblWasSollAngezeigt.setBounds(10, 83, 163, 26);
 		panel_1.add(lblWasSollAngezeigt);
 		
 
 		JComboBox comboBox_Was = new JComboBox();
+		comboBoxes.add(comboBox_Was);
 		comboBox_Was.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
 		comboBox_Was.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		comboBox_Was.setModel(new DefaultComboBoxModel(new String[] {"Verlauf Verbrauch", "Verlauf Kosten", "Verlauf Zählerstände"}));
@@ -1353,6 +1516,7 @@ public class frame {
 
 		//checkbox für Durchschnitt
 		chckbxDurchschnitt = new JCheckBox("Anzeige \r⌀");
+		checkBoxes.add(chckbxDurchschnitt);
 		chckbxDurchschnitt.setBackground(new Color(245, 245, 243));
 		chckbxDurchschnitt.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -1365,6 +1529,7 @@ public class frame {
         
 		//combobox für die Anzeige der Auswahl der möglichen Abstände
 		JComboBox comboBox_Abstand = new JComboBox();
+		comboBoxes.add(comboBox_Abstand);
 		comboBox_Abstand.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
 		comboBox_Abstand.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		comboBox_Abstand.setModel(new DefaultComboBoxModel(new String[] {"Tage", "Wochen", "Monate", "Jahre"}));
@@ -1378,12 +1543,15 @@ public class frame {
 
 		
 		JLabel lblGaspreis = new JLabel("Gaspreis");
+		labels.add(lblGaspreis);
 		lblGaspreis.setFont(new Font("Segoe UI", Font.BOLD, 12));
 		lblGaspreis.setBounds(10, 146, 163, 26);
 		panel_1.add(lblGaspreis);
 		
 		//Textfeld für Gaspreis
 		textField_2 = new JTextField();
+		textFields.add(textField_2);
+		textField_2.setText("0.00");
 		textField_2.setBounds(10, 177, 96, 20);
 		textField_2.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		textField_2.setFont(new Font("Segoe UI", Font.BOLD, 11));
@@ -1392,17 +1560,20 @@ public class frame {
 		textField_2.setColumns(10);
 		
 		JLabel lbl_PreisEinheit = new JLabel("ct/kWh");
+		labels.add(lbl_PreisEinheit);
 		lbl_PreisEinheit.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		lbl_PreisEinheit.setBounds(116, 177, 163, 26);
 		panel_1.add(lbl_PreisEinheit);
 
 		JLabel lblAnzeigeeinstellungen = new JLabel("Anzeigeeinstellungen");
+		labels.add(lblAnzeigeeinstellungen);
 		lblAnzeigeeinstellungen.setFont(new Font("Segoe UI Black", Font.PLAIN, 18));
 		lblAnzeigeeinstellungen.setBounds(657, 119, 231, 26);
 		frmAnzeige.getContentPane().add(lblAnzeigeeinstellungen);
 
 
 		JPanel panel_Alarm = new JPanel();
+		panelLight.add(panel_Alarm);
 		panel_Alarm.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panel_Alarm.setLayout(null);
 		panel_Alarm.setBackground(new Color(245, 245, 243));
@@ -1410,16 +1581,19 @@ public class frame {
 		frmAnzeige.getContentPane().add(panel_Alarm);
 		
 		JLabel lbl_erlaubteAbweichung = new JLabel("Erlaubte Abweichung");
+		labels.add(lbl_erlaubteAbweichung);
 		lbl_erlaubteAbweichung.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
 		lbl_erlaubteAbweichung.setBounds(10, 11, 152, 26);
 		panel_Alarm.add(lbl_erlaubteAbweichung);
 		
 		JLabel lbl_prozentAbweichungen = new JLabel("Prozent Abweichungen");
+		labels.add(lbl_prozentAbweichungen);
 		lbl_prozentAbweichungen.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
 		lbl_prozentAbweichungen.setBounds(172, 11, 152, 26);
 		panel_Alarm.add(lbl_prozentAbweichungen);
 		
 		txtBox_erlaubteAbweichung = new JTextField("30");
+		textFields.add(txtBox_erlaubteAbweichung);
 		txtBox_erlaubteAbweichung.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		txtBox_erlaubteAbweichung.setFont(new Font("Segoe UI", Font.BOLD, 11));
 		txtBox_erlaubteAbweichung.setColumns(10);
@@ -1427,16 +1601,19 @@ public class frame {
 		panel_Alarm.add(txtBox_erlaubteAbweichung);
 		
 		JLabel lbl_Prozent = new JLabel("%");
+		labels.add(lbl_Prozent);
 		lbl_Prozent.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		lbl_Prozent.setBounds(82, 32, 20, 26);
 		panel_Alarm.add(lbl_Prozent);
 		
 		JLabel lbl_Prozent2 = new JLabel("%");
+		labels.add(lbl_Prozent2);
 		lbl_Prozent2.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		lbl_Prozent2.setBounds(244, 32, 20, 26);
 		panel_Alarm.add(lbl_Prozent2);
 		
 		txtBox_prozentAbweichungen = new JTextField("30");
+		textFields.add(txtBox_prozentAbweichungen);
 		txtBox_prozentAbweichungen.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		txtBox_prozentAbweichungen.setFont(new Font("Segoe UI", Font.BOLD, 11));
 		txtBox_prozentAbweichungen.setColumns(10);
@@ -1444,21 +1621,25 @@ public class frame {
 		panel_Alarm.add(txtBox_prozentAbweichungen);
 		
 		JLabel lbl_Alarm = new JLabel("Alarme");
+		labels.add(lbl_Alarm);
 		lbl_Alarm.setFont(new Font("Segoe UI Black", Font.PLAIN, 18));
 		lbl_Alarm.setBounds(108, 409, 98, 26);
 		frmAnzeige.getContentPane().add(lbl_Alarm);
 		
 		JLabel lblIconSettings = new JLabel("");
+		labels.add(lblIconSettings);
 		lblIconSettings.setIcon(new ImageIcon("icons/icons8-zahnrad-50.png"));
 		lblIconSettings.setBounds(597, 105, 50, 50);
 		frmAnzeige.getContentPane().add(lblIconSettings);
 		
 		JLabel lblIconAlarm = new JLabel("");
+		labels.add(lblIconAlarm);
 		lblIconAlarm.setIcon(new ImageIcon("icons/icons8-alarm-50.png"));
 		lblIconAlarm.setBounds(48, 396, 50, 50);
 		frmAnzeige.getContentPane().add(lblIconAlarm);
 		
 		JLabel lblIconAlarm_1 = new JLabel("");
+		labels.add(lblIconAlarm_1);
 		lblIconAlarm_1.setIcon(new ImageIcon("icons/icons8-filtern-und-sortieren-48.png"));
 		lblIconAlarm_1.setBounds(48, 105, 50, 50);
 		frmAnzeige.getContentPane().add(lblIconAlarm_1);

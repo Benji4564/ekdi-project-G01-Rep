@@ -545,7 +545,7 @@ public class utils {
     public static void getTemperature(){
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://thermostat1/status"))
+            .uri(URI.create("http://thermostat2/status"))
             .build();
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
         {
