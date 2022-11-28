@@ -542,6 +542,7 @@ public class utils {
     5. It parses the JSON response and gets the temperature value.
     6. It assigns the temperature value to the temperature field of the SmartHeating class. 
     */
+    
     public static void getTemperature(){
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -564,5 +565,4 @@ public class utils {
         }
 
     }
-
 }
