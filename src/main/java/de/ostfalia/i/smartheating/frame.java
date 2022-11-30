@@ -1479,7 +1479,7 @@ public class frame {
 		comboBoxes.add(comboBox_Abstand);
 		comboBox_Abstand.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
 		comboBox_Abstand.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		comboBox_Abstand.setModel(new DefaultComboBoxModel(new String[] {"Tage", "Wochen", "Monate", "Jahre"}));
+		comboBox_Abstand.setModel(new DefaultComboBoxModel(new String[] {"Tag", "Woche", "Monat", "Jahr"}));
 		comboBox_Abstand.setBounds(10, 39, 224, 30);
         comboBox_Abstand.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {

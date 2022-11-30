@@ -18402,7 +18402,7 @@
                       0
                     ],
                     "hourlyUsage": [
-                      20175,
+                      20174,
                       20177,
                       20181,
                       20184,
@@ -58860,6 +58860,12 @@
     },
     {
       "name": "Flur",
+      "measurements": {
+        "years": []
+      }
+    },
+    {
+      "name": "Hinterhof",
       "measurements": {
         "years": []
       }
