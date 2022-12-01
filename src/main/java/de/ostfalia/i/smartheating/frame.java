@@ -189,7 +189,7 @@ public class frame {
 			SmartHeating preisWerte = new SmartHeating();
 			for(double u: object.getMeasurements()){				
 				preisWerte.addMeasurement(u * Float.parseFloat(textField_2.getText()));
-				System.out.println(u * Float.parseFloat(textField_2.getText()));
+
 				preisWerte.setName(i);
 			}
 			
@@ -208,7 +208,6 @@ public class frame {
 		Average[] averagesUp = getDeviationUp(erlaubteAbweichung, object);
 		for(Average avg: averagesUp){
 			if(avg.percent>=prozentAbweichungen){
-				System.out.println("Abweichung in: "+ avg.name + ": " + avg.percent + "%");
 				JOptionPane.showMessageDialog(null, "Abweichung in/im " + avg.name + " liegt um " + avg.percent + "% über dem Durchschnittswert.");
 			}										
 		}
@@ -224,7 +223,6 @@ public class frame {
 		Average[] averagesDown = getDeviationDown(erlaubteAbweichung, object);
 		for(Average avg: averagesDown){
 			if(avg.percent>=prozentAbweichungen){
-				System.out.println("Abweichung in: "+avg.name + ": " + avg.percent + "%");
 				JOptionPane.showMessageDialog(null, "Abweichung in/im "+ avg.name + " liegt um " + avg.percent + "% unter dem Durchschnittswert.");
 			}										
 		}
@@ -556,7 +554,7 @@ public class frame {
 		//Hinweis
 		JLabel lblIconHinweis = new JLabel("");
 		labels.add(lblIconHinweis);
-		lblIconHinweis.setIcon(new ImageIcon("icons/icons8-benutzerhandbuch-50.png"));
+		lblIconHinweis.setIcon(new ImageIcon("src/icons/icons8-benutzerhandbuch-50.png"));
 		lblIconHinweis.setBounds(10, 11, 50, 50);
 		lblIconHinweis.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
@@ -573,7 +571,7 @@ public class frame {
 				else darkmode();
 			}
 		});
-		lblMode.setIcon(new ImageIcon("icons/icons8-nightmode-32.png"));
+		lblMode.setIcon(new ImageIcon("src/icons/icons8-nightmode-32.png"));
 		lblMode.setBounds(946, 11, 56, 50);
 		frmSmartheater.getContentPane().add(lblMode);
 
@@ -656,7 +654,7 @@ public class frame {
 		
 		JButton btnHome = new JButton("Hauptmenü");
 		buttons.add(btnHome);
-		btnHome.setIcon(new ImageIcon("icons/icons8-startseite-24.png"));
+		btnHome.setIcon(new ImageIcon("src/icons/icons8-startseite-24.png"));
 		btnHome.setFocusPainted(false);
 		btnHome.setFont(new Font("Segoe UI", Font.BOLD, 11));
 		btnHome.setForeground(new Color(0, 0, 0));
@@ -1057,7 +1055,7 @@ public class frame {
 
 		JButton btnHome2 = new JButton("Hauptmenü");
 		buttons.add(btnHome2);
-		btnHome2.setIcon(new ImageIcon("icons/icons8-startseite-24.png"));
+		btnHome2.setIcon(new ImageIcon("src/src/icons/icons8-startseite-24.png"));
 		btnHome2.setFont(new Font("Segoe UI", Font.BOLD, 12));
 		btnHome2.setBackground(new Color(255, 255, 255));
 		btnHome2.setFocusPainted(false);
@@ -1191,7 +1189,6 @@ public class frame {
                                 int index = 0;
 								int colorIndex = 0;
                                 for(String i: allRooms){
-									System.out.println("Room: " + i);	
 									SmartHeating object = new SmartHeating();
 									if(wasAnzeige == 0 || wasAnzeige == 1){																
                                     	
@@ -1202,9 +1199,6 @@ public class frame {
 									
 									object = erstellungGraphen(allColors, colorIndex, index, object, i);
 									allMeasuSmartHeatings[index] = object;
-									for (double z: object.getMeasurements()) {
-										System.out.println(z);
-									}
 									index++;
 									colorIndex++;
 									if(colorIndex == allColors.length ){
@@ -1278,7 +1272,7 @@ public class frame {
 								
                                 SmartHeating.drawLinePlot(SmartHeating.graphConfig, allMax);
                             } catch (Exception a) {
-                                System.out.println(a);
+                                System.err.println(a);
                             }
                             break;
                         case 2:
@@ -1419,7 +1413,6 @@ public class frame {
 
  
                 }
-				System.out.println("Liste: " + list_Room.getSelectedValuesList());
 				allRooms = list_Room.getSelectedValuesList();
             }
         });
@@ -1456,7 +1449,6 @@ public class frame {
         comboBox_Was.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 				wasAnzeige = comboBox_Was.getSelectedIndex();
-				System.out.println(wasAnzeige);
             }
         });
 		panel_1.add(comboBox_Was);
@@ -1575,19 +1567,19 @@ public class frame {
 		
 		JLabel lblIconSettings = new JLabel("");
 		labels.add(lblIconSettings);
-		lblIconSettings.setIcon(new ImageIcon("icons/icons8-zahnrad-50.png"));
+		lblIconSettings.setIcon(new ImageIcon("src/icons/icons8-zahnrad-50.png"));
 		lblIconSettings.setBounds(597, 105, 50, 50);
 		frmAnzeige.getContentPane().add(lblIconSettings);
 		
 		JLabel lblIconAlarm = new JLabel("");
 		labels.add(lblIconAlarm);
-		lblIconAlarm.setIcon(new ImageIcon("icons/icons8-alarm-50.png"));
+		lblIconAlarm.setIcon(new ImageIcon("src/icons/icons8-alarm-50.png"));
 		lblIconAlarm.setBounds(48, 396, 50, 50);
 		frmAnzeige.getContentPane().add(lblIconAlarm);
 		
 		JLabel lblIconAlarm_1 = new JLabel("");
 		labels.add(lblIconAlarm_1);
-		lblIconAlarm_1.setIcon(new ImageIcon("icons/icons8-filtern-und-sortieren-48.png"));
+		lblIconAlarm_1.setIcon(new ImageIcon("src/icons/icons8-filtern-und-sortieren-48.png"));
 		lblIconAlarm_1.setBounds(48, 105, 50, 50);
 		frmAnzeige.getContentPane().add(lblIconAlarm_1);
 		

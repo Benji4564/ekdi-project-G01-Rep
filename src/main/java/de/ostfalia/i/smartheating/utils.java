@@ -552,7 +552,6 @@ public class utils {
         {
             try {
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                System.out.println(response.body());
                 Object r = new JSONParser().parse(response.body());
                 JSONObject jsonObject = (JSONObject) r;
                 JSONArray thermostats = (JSONArray) jsonObject.get("thermostats");
@@ -560,7 +559,7 @@ public class utils {
                 JSONObject tmp = (JSONObject) thermostat.get("tmp");
                 SmartHeating.temperature = (double) tmp.get("value");
             } catch (Exception e) {
-                System.out.println(e);
+                System.out.println("Warning: Error while getting temperature");
             }
         }
 
